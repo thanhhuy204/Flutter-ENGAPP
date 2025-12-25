@@ -1,0 +1,73 @@
+name: flutter_kids_matching_game
+description: A new Flutter project.
+
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.1.0 <4.0.0"
+
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: 1.0.8
+  audioplayers: 6.4.0
+  font_awesome_flutter: 10.8.0
+  provider: 6.1.5
+  get_storage: 2.1.1
+  flutter_riverpod: 2.6.1
+  easy_localization: 3.0.7+1
+  flutter_tts: ^4.2.3
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^2.0.0
+
+
+flutter:
+
+  generate: true
+  uses-material-design: true
+
+
+  assets:
+    - assets/sounds/
+    - assets/images/
+    - assets/images/colors/
+    - assets/images/animals/
+    - assets/images/fruits/
+    - assets/translations/
+    
+
+  fonts:
+    - family: Fredoka
+      fonts:
+        - asset: assets/fonts/Fredoka/Fredoka-Regular.ttf
+        - weight: 700
+          asset: assets/fonts/Fredoka/Fredoka-Bold.ttf
+
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito/Nunito-Regular.ttf
+        - weight: 700
+          asset: assets/fonts/Nunito/Nunito-Bold.ttf
+
+    - family: PrincessSofia
+      fonts:
+        - asset: assets/fonts/PrincessSofia/PrincessSofia-Regular.ttf
+
+    - family: Sunnyspells
+      fonts:
+        - asset: assets/fonts/Sunnyspells/Sunnyspells-Regular.otf
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
