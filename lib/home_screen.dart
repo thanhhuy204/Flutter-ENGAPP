@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_kids_matching_game/features/spelling/presentation/screens/spelling_screen.dart';
+import 'features/treasure_hunt/treasure_hunt_screen.dart';
 import 'package:flutter_kids_matching_game/core/theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -112,6 +113,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   // Khoảng trống dưới cùng để cuộn mượt hơn
                   const SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent,
+                        minimumSize: const Size(double.infinity, 56),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      ),
+                      icon: const Icon(Icons.map, color: Colors.white, size: 32),
+                      label: const Text(
+                        'Treasure Hunt Game',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const TreasureHuntScreen()),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
