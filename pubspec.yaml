@@ -47,6 +47,7 @@ flutter:
     - assets/images/fruits/
     - assets/images/treasures/
     - assets/translations/
+    - assets/audio/
     
 
   fonts:

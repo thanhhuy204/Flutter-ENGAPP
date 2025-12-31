@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_kids_matching_game/core/theme/app_theme.dart';
-import 'package:flutter_kids_matching_game/features/settings/presentation/screens/level_selector.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/screens/language_selector.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/screens/theme_color_selector.dart';
 
@@ -26,7 +25,6 @@ class SettingScreen extends ConsumerWidget {
             colors: [Colors.white, AppTheme.primaryColor],
           ),
         ),
-        // SỬA LỖI: Sử dụng SingleChildScrollView thay vì Column trực tiếp
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
@@ -40,13 +38,9 @@ class SettingScreen extends ConsumerWidget {
                   title: 'lesson_language'.tr(),
                   child: const LanguageSelector(),
                 ),
-                const SizedBox(height: 20),
-                _buildSection(
-                  context,
-                  icon: Icons.school,
-                  title: 'game_level'.tr(),
-                  child: const LevelSelector(),
-                ),
+
+                // --- ĐÃ XÓA PHẦN LEVEL SELECTOR TẠI ĐÂY ---
+
                 const SizedBox(height: 20),
                 _buildSection(
                   context,
@@ -55,7 +49,6 @@ class SettingScreen extends ConsumerWidget {
                   child: const ThemeColorSelector(),
                 ),
 
-                // SỬA LỖI: Thay Spacer() bằng SizedBox vì bên trong ScrollView không dùng được Spacer
                 const SizedBox(height: 40),
                 _buildFooter(context),
               ],
@@ -79,7 +72,7 @@ class SettingScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Sửa lại cách dùng opacity
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -102,7 +95,7 @@ class SettingScreen extends ConsumerWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Colors.white, // Đảm bảo text hiển thị rõ trên nền màu primary
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -117,44 +110,13 @@ class SettingScreen extends ConsumerWidget {
   Column _buildFooter(BuildContext context) {
     return Column(
       children: [
-        const Divider(thickness: 5, color: Colors.black, height: 20),
+        const Divider(thickness: 2, color: Colors.black12, height: 20),
         const SizedBox(height: 10),
-        InkWell(
-          onTap: () => _copyEmailToClipboard(context),
-          child: Center( // Căn giữa footer
-            child: Text.rich(
-              textAlign: TextAlign.center,
-              TextSpan(
-                style: const TextStyle(color: Colors.black, fontSize: 18),
-                children: [
-                  TextSpan(text: 'developed_by'.tr(), style: const TextStyle(fontSize: 20)),
-                  const TextSpan(text: " "),
-                  TextSpan(
-                    text: 'ibs'.tr(),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        const Text('Made with ❤️ for Kids', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 5),
-        Text('${'version'.tr()} 1.5.0', style: const TextStyle(fontWeight: FontWeight.w500)),
-        const Divider(thickness: 5, color: Colors.black, height: 20),
+        Text('${'version'.tr()} 2.0.0', style: const TextStyle(color: Colors.grey)),
+        const SizedBox(height: 20),
       ],
     );
-  }
-
-  void _copyEmailToClipboard(BuildContext context) {
-    const email = 'contact@ibrahimselman.com';
-    Clipboard.setData(const ClipboardData(text: email)).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('email_copied'.tr())),
-      );
-    });
   }
 }

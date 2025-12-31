@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class DesertFillBlank extends StatefulWidget {
   final int questionIndex;
@@ -10,68 +11,43 @@ class DesertFillBlank extends StatefulWidget {
 }
 
 class _DesertFillBlankState extends State<DesertFillBlank> {
-  // CẬP NHẬT: Từ vựng Sa mạc cho trẻ em (Dễ hiểu & Vui nhộn)
+  final AudioPlayer sfxPlayer = AudioPlayer();
+
+  // KHO CÂU HỎI MỞ RỘNG (15 Câu)
   final List<Map<String, String>> questions = [
-    {
-      'word': 'CAMEL',
-      'question': 'C_MEL',
-      'answer': 'A',
-      'hint': 'I have humps and I can walk on sand.'
-    }, // Lạc đà
-    {
-      'word': 'SUN',
-      'question': 'S_N',
-      'answer': 'U',
-      'hint': 'I am very hot and shine in the sky.'
-    }, // Mặt trời
-    {
-      'word': 'SAND',
-      'question': 'S_ND',
-      'answer': 'A',
-      'hint': 'The desert is full of this yellow dust.'
-    }, // Cát
-    {
-      'word': 'CACTUS',
-      'question': 'CA_TUS',
-      'answer': 'C',
-      'hint': 'I am a green plant with sharp spikes.'
-    }, // Xương rồng
-    {
-      'word': 'SNAKE',
-      'question': 'SNA_E',
-      'answer': 'K',
-      'hint': 'I have no legs and I say "Hiss".'
-    }, // Rắn
-    {
-      'word': 'FOX',
-      'question': 'F_X',
-      'answer': 'O',
-      'hint': 'I am a small animal with very big ears.'
-    }, // Cáo sa mạc (Fennec Fox) - Đặc trưng sa mạc
-    {
-      'word': 'HOT',
-      'question': 'H_T',
-      'answer': 'O',
-      'hint': 'The weather in the desert is very...?'
-    }, // Nóng
-    {
-      'word': 'PALM',
-      'question': 'P_LM',
-      'answer': 'A',
-      'hint': 'A tall tree that grows near water.'
-    }, // Cây cọ
-    {
-      'word': 'WATER',
-      'question': 'WA_ER',
-      'answer': 'T',
-      'hint': 'You must drink me when you are thirsty.'
-    }, // Nước
+    {'word': 'CAMEL', 'question': 'C_MEL', 'answer': 'A', 'hint': 'I have humps and I can walk on sand.'},
+    {'word': 'SUN', 'question': 'S_N', 'answer': 'U', 'hint': 'I am very hot and shine in the sky.'},
+    {'word': 'SAND', 'question': 'S_ND', 'answer': 'A', 'hint': 'The desert is full of this yellow dust.'},
+    {'word': 'CACTUS', 'question': 'CA_TUS', 'answer': 'C', 'hint': 'I am a green plant with sharp spikes.'},
+    {'word': 'SNAKE', 'question': 'SNA_E', 'answer': 'K', 'hint': 'I have no legs and I say "Hiss".'},
+    {'word': 'FOX', 'question': 'F_X', 'answer': 'O', 'hint': 'I am a small animal with very big ears.'},
+    {'word': 'HOT', 'question': 'H_T', 'answer': 'O', 'hint': 'The weather in the desert is very...?'},
+    {'word': 'PALM', 'question': 'P_LM', 'answer': 'A', 'hint': 'A tall tree that grows near water.'},
+    {'word': 'WATER', 'question': 'WA_ER', 'answer': 'T', 'hint': 'You must drink me when you are thirsty.'},
+    {'word': 'OASIS', 'question': 'OAS_S', 'answer': 'I', 'hint': 'A place with water in the desert.'},
+    {'word': 'DRY', 'question': 'D_Y', 'answer': 'R', 'hint': 'The desert is not wet, it is...'},
+    {'word': 'DUNE', 'question': 'D_NE', 'answer': 'U', 'hint': 'A hill made of sand.'},
+    {'word': 'GOLD', 'question': 'G_LD', 'answer': 'O', 'hint': 'A shiny yellow treasure.'},
+    {'word': 'TENT', 'question': 'TE_T', 'answer': 'N', 'hint': 'You sleep in this when camping.'},
+    {'word': 'SKY', 'question': 'S_Y', 'answer': 'K', 'hint': 'It is blue and above your head.'},
   ];
 
   String input = '';
   bool completed = false;
   String error = '';
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    sfxPlayer.dispose();
+    super.dispose();
+  }
+
+  void _playSFX(bool isWin) async {
+    await sfxPlayer.stop();
+    await sfxPlayer.setVolume(1.0);
+    await sfxPlayer.play(AssetSource(isWin ? 'audio/win.mp3' : 'audio/lose.mp3'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +87,12 @@ class _DesertFillBlankState extends State<DesertFillBlank> {
                 onChanged: (val) {
                   input = val.toUpperCase();
                   if (input == q['answer']) {
+                    _playSFX(true); // Win
                     completed = true;
                     error = '';
-                    // Đã tắt tự động chuyển màn hình, chờ bấm nút
                     setState(() {});
                   } else if (input.isNotEmpty) {
+                    _playSFX(false); // Lose
                     setState(() {
                       error = 'Wrong!';
                     });
@@ -162,10 +139,9 @@ class _DesertFillBlankState extends State<DesertFillBlank> {
 
                     const SizedBox(height: 20),
 
-                    // THÊM NÚT NEXT LEVEL THỦ CÔNG
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange, // Màu cam cho Desert
+                        backgroundColor: Colors.orange,
                         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                         elevation: 8,

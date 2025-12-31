@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:audioplayers/audioplayers.dart'; // Thêm thư viện âm thanh
 
 class JungleListenChoose extends StatefulWidget {
   final int questionIndex;
@@ -11,63 +12,96 @@ class JungleListenChoose extends StatefulWidget {
 }
 
 class _JungleListenChooseState extends State<JungleListenChoose> {
-  // Đã cập nhật: Chọn những con vật cơ bản, dễ nhận biết nhất cho bé
+  final FlutterTts flutterTts = FlutterTts();
+  final AudioPlayer sfxPlayer = AudioPlayer(); // Player cho hiệu ứng
+
+  // KHO CÂU HỎI MỞ RỘNG (Dùng ảnh có sẵn trong assets)
   final List<Map<String, dynamic>> questions = [
     {
       'word': 'Monkey',
       'options': [
-        'assets/images/animals/monkey.png',    // Khỉ (Đúng)
-        'assets/images/animals/lion.png',      // Sư tử (Khác hẳn)
-        'assets/images/animals/elephant.png',  // Voi (Khác hẳn)
-        'assets/images/animals/zebra.png'      // Ngựa vằn (Khác hẳn)
+        'assets/images/animals/monkey.png',
+        'assets/images/animals/lion.png',
+        'assets/images/animals/elephant.png',
+        'assets/images/animals/zebra.png'
       ],
       'answer': 0,
     },
     {
       'word': 'Tiger',
       'options': [
-        'assets/images/animals/giraffe.png',   // Hươu cao cổ
-        'assets/images/animals/tiger.png',     // Hổ (Đúng)
-        'assets/images/animals/fox.png',       // Cáo
-        'assets/images/animals/deer.png'       // Hươu/Nai
+        'assets/images/animals/giraffe.png',
+        'assets/images/animals/tiger.png',
+        'assets/images/animals/fox.png',
+        'assets/images/animals/deer.png'
       ],
       'answer': 1,
     },
     {
       'word': 'Lion',
       'options': [
-        'assets/images/animals/zebra.png',     // Ngựa vằn
-        'assets/images/animals/lion.png',      // Sư tử (Đúng)
-        'assets/images/animals/monkey.png',    // Khỉ
-        'assets/images/animals/parrot.png'     // Vẹt
+        'assets/images/animals/zebra.png',
+        'assets/images/animals/lion.png',
+        'assets/images/animals/monkey.png',
+        'assets/images/animals/parrot.png'
       ],
       'answer': 1,
     },
     {
       'word': 'Elephant',
       'options': [
-        'assets/images/animals/tiger.png',     // Hổ
-        'assets/images/animals/fox.png',       // Cáo
-        'assets/images/animals/elephant.png',  // Voi (Đúng)
-        'assets/images/animals/squirrel.png'   // Sóc
+        'assets/images/animals/tiger.png',
+        'assets/images/animals/fox.png',
+        'assets/images/animals/elephant.png',
+        'assets/images/animals/squirrel.png'
       ],
       'answer': 2,
     },
     {
       'word': 'Giraffe',
       'options': [
-        'assets/images/animals/lion.png',      // Sư tử
-        'assets/images/animals/giraffe.png',   // Hươu cao cổ (Đúng)
-        'assets/images/animals/monkey.png',    // Khỉ
-        'assets/images/animals/duck.png'       // Vịt
+        'assets/images/animals/lion.png',
+        'assets/images/animals/giraffe.png',
+        'assets/images/animals/monkey.png',
+        'assets/images/animals/duck.png'
       ],
       'answer': 1,
+    },
+    // --- THÊM CÂU MỚI ---
+    {
+      'word': 'Hippo',
+      'options': [
+        'assets/images/animals/hippopotamus.png',
+        'assets/images/animals/rhinoceros.png',
+        'assets/images/animals/buffalo.png',
+        'assets/images/animals/ox.png'
+      ],
+      'answer': 0,
+    },
+    {
+      'word': 'Zebra',
+      'options': [
+        'assets/images/animals/horse.png',
+        'assets/images/animals/zebra.png',
+        'assets/images/animals/donkey.png', // Nếu chưa có ảnh thì dùng tạm ảnh khác hoặc icon
+        'assets/images/animals/deer.png'
+      ],
+      'answer': 1,
+    },
+    {
+      'word': 'Ostrich',
+      'options': [
+        'assets/images/animals/chicken.png',
+        'assets/images/animals/duck.png',
+        'assets/images/animals/ostrich.png',
+        'assets/images/animals/owl.png'
+      ],
+      'answer': 2,
     },
   ];
 
   bool completed = false;
   int selected = -1;
-  final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -75,11 +109,23 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
     Future.delayed(const Duration(milliseconds: 500), playSound);
   }
 
+  @override
+  void dispose() {
+    sfxPlayer.dispose();
+    super.dispose();
+  }
+
   void playSound() async {
     final q = questions[widget.questionIndex % questions.length];
     await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.2);
+    await flutterTts.setPitch(1.0);
     await flutterTts.speak("${q['word']}!");
+  }
+
+  void _playSFX(bool isWin) async {
+    await sfxPlayer.stop();
+    await sfxPlayer.setVolume(1.0);
+    await sfxPlayer.play(AssetSource(isWin ? 'audio/win.mp3' : 'audio/lose.mp3'));
   }
 
   @override
@@ -96,7 +142,6 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
 
             const SizedBox(height: 30),
 
-            // Nút loa
             GestureDetector(
               onTap: playSound,
               child: Container(
@@ -112,7 +157,6 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
 
             const SizedBox(height: 40),
 
-            // Lưới hình ảnh 2x2
             SizedBox(
               width: 320,
               child: GridView.builder(
@@ -139,9 +183,11 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
                         selected = i;
                       });
                       if (isCorrect) {
+                        _playSFX(true); // Âm thanh đúng
                         setState(() => completed = true);
                         flutterTts.speak("Correct! Good job.");
                       } else {
+                        _playSFX(false); // Âm thanh sai
                         flutterTts.speak("Try again.");
                         Future.delayed(const Duration(milliseconds: 1000), () {
                           setState(() => selected = -1);
@@ -170,7 +216,6 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
               ),
             ),
 
-            // NÚT CHUYỂN LEVEL THỦ CÔNG
             if (completed)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30.0),

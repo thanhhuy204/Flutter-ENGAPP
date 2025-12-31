@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class MountainWordPuzzle extends StatefulWidget {
   final int questionIndex;
@@ -10,18 +11,25 @@ class MountainWordPuzzle extends StatefulWidget {
 }
 
 class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
-  // CẬP NHẬT: Từ vựng chủ đề Núi & Thiên nhiên hoang dã (Level 2)
+  final AudioPlayer sfxPlayer = AudioPlayer();
+
+  // KHO CÂU HỎI MỞ RỘNG (15 Câu)
   final List<Map<String, dynamic>> questions = [
-    {'word': 'GOAT', 'hint': 'I have horns and climb steep rocks.'}, // Dê núi
-    {'word': 'BEAR', 'hint': 'I am big, furry and sleep in a cave.'}, // Gấu
-    {'word': 'WOLF', 'hint': 'I look like a dog and howl at the moon.'}, // Sói
-    {'word': 'EAGLE', 'hint': 'I am a bird that flies high over mountains.'}, // Đại bàng
-    {'word': 'FOX', 'hint': 'I have a bushy tail and live in the wild.'}, // Cáo
-    {'word': 'OWL', 'hint': 'I have big eyes and hoot at night.'}, // Cú
-    {'word': 'ROCK', 'hint': 'I am hard and gray. Mountains are made of me.'}, // Đá
-    {'word': 'SNOW', 'hint': 'I am white, cold and fall on peaks.'}, // Tuyết
-    {'word': 'CAVE', 'hint': 'I am a dark hole in the mountain side.'}, // Hang động
-    {'word': 'PINE', 'hint': 'I am a tall tree that stays green all year.'}, // Cây thông
+    {'word': 'GOAT', 'hint': 'I have horns and climb steep rocks.'},
+    {'word': 'BEAR', 'hint': 'I am big, furry and sleep in a cave.'},
+    {'word': 'WOLF', 'hint': 'I look like a dog and howl at the moon.'},
+    {'word': 'EAGLE', 'hint': 'I am a bird that flies high over mountains.'},
+    {'word': 'FOX', 'hint': 'I have a bushy tail and live in the wild.'},
+    {'word': 'OWL', 'hint': 'I have big eyes and hoot at night.'},
+    {'word': 'ROCK', 'hint': 'I am hard and gray. Mountains are made of me.'},
+    {'word': 'SNOW', 'hint': 'I am white, cold and fall on peaks.'},
+    {'word': 'CAVE', 'hint': 'I am a dark hole in the mountain side.'},
+    {'word': 'PINE', 'hint': 'I am a tall tree that stays green all year.'},
+    {'word': 'HILL', 'hint': 'I am smaller than a mountain.'},
+    {'word': 'COLD', 'hint': 'The opposite of hot. Mountains are...'},
+    {'word': 'HIGH', 'hint': 'Mountains are very...?'},
+    {'word': 'DEER', 'hint': 'I look like Bambi.'},
+    {'word': 'WIND', 'hint': 'I blow strongly on the mountain top.'},
   ];
 
   List<String> letters = [];
@@ -41,14 +49,27 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
     used = List.filled(letters.length, false);
   }
 
+  @override
+  void dispose() {
+    sfxPlayer.dispose();
+    super.dispose();
+  }
+
+  void _playSFX(bool isWin) async {
+    await sfxPlayer.stop();
+    await sfxPlayer.setVolume(1.0);
+    await sfxPlayer.play(AssetSource(isWin ? 'audio/win.mp3' : 'audio/lose.mp3'));
+  }
+
   void checkAnswer() {
     if (answer.join() == currentWord) {
-      // Khi đúng -> Chỉ hiện thông báo hoàn thành, KHÔNG tự chuyển màn
+      _playSFX(true); // Âm thanh thắng
       setState(() {
         completed = true;
         error = '';
       });
     } else if (answer.length == currentWord.length) {
+      _playSFX(false); // Âm thanh thua
       error = 'Try again!';
       Future.delayed(const Duration(milliseconds: 700), () {
         if (mounted) {
@@ -75,7 +96,6 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
             const Text('Spelling Challenge!', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.deepOrange)),
             const SizedBox(height: 10),
 
-            // Khung gợi ý (Hint)
             Container(
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -93,7 +113,6 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
 
             const SizedBox(height: 40),
 
-            // KHU VỰC HIỂN THỊ KẾT QUẢ (CÁC Ô TRỐNG)
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 8,
@@ -132,7 +151,6 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
 
             const SizedBox(height: 20),
 
-            // HIỂN THỊ THÔNG BÁO LỖI
             SizedBox(
               height: 30,
               child: Text(error, style: const TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
@@ -140,7 +158,6 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
 
             const SizedBox(height: 20),
 
-            // KHU VỰC CHỌN CHỮ CÁI (BUTTONS)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Wrap(
@@ -171,7 +188,6 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
               ),
             ),
 
-            // NÚT CHUYỂN LEVEL THỦ CÔNG
             if (completed)
               Padding(
                 padding: const EdgeInsets.only(top: 30.0, bottom: 20.0),
@@ -184,7 +200,7 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
 
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.brown, // Màu nâu cho Mountain
+                        backgroundColor: Colors.brown,
                         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                         elevation: 8,

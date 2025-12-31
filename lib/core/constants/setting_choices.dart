@@ -1,75 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:easy_localization/easy_localization.dart';
 
-//  This file contains the constants for the settings choices that are
-// used throughout the app. It defines the enums for game levels, app
-// languages, and theme colors. Each enum has an extension that provides
-// additional functionality such as getting translated names, actual names,
-// color values, and locale values. This allows for easier management of
-// settings in the app.
-
-/// game level enum constant
-enum GameLevel {
-  level1,
-  level2,
-  level3,
-  level4,
-  level5,
-}
-
-extension GameLevelExtension on GameLevel {
-  String get translatedName {
-    switch (this) {
-      case GameLevel.level1:
-        return 'level1'.tr();
-      case GameLevel.level2:
-        return 'level2'.tr();
-      case GameLevel.level3:
-        return 'level3'.tr();
-      case GameLevel.level4:
-        return 'level4'.tr();
-      case GameLevel.level5:
-        return 'level5'.tr();
-    }
-  }
-
-  String get actualName {
-    switch (this) {
-      case GameLevel.level1:
-        return 'level1';
-      case GameLevel.level2:
-        return 'level2';
-      case GameLevel.level3:
-        return 'level3';
-      case GameLevel.level4:
-        return 'level4';
-      case GameLevel.level5:
-        return 'level5';
-    }
-  }
-
-   int get number {
-    switch (this) {
-      case GameLevel.level1:
-        return 1;
-      case GameLevel.level2:
-        return 2;
-      case GameLevel.level3:
-        return 3;
-      case GameLevel.level4:
-        return 4;
-      case GameLevel.level5:
-        return 5;
-    }
-  }
-}
-
-/// app supported languages enum constant
+/// App supported languages enum constant
 enum AppLanguage {
   english,
-  amharic,
-  arabic,
+  japanese,
 }
 
 extension AppLanguageExtension on AppLanguage {
@@ -77,10 +12,8 @@ extension AppLanguageExtension on AppLanguage {
     switch (this) {
       case AppLanguage.english:
         return 'english'.tr();
-      case AppLanguage.amharic:
-        return 'amharic'.tr();
-      case AppLanguage.arabic:
-        return 'arabic'.tr();
+      case AppLanguage.japanese:
+        return 'japanese'.tr(); // Anh nhớ thêm key này vào file json nhé
     }
   }
 
@@ -88,10 +21,8 @@ extension AppLanguageExtension on AppLanguage {
     switch (this) {
       case AppLanguage.english:
         return 'english';
-      case AppLanguage.amharic:
-        return 'amharic';
-      case AppLanguage.arabic:
-        return 'arabic';
+      case AppLanguage.japanese:
+        return 'japanese';
     }
   }
 
@@ -99,10 +30,8 @@ extension AppLanguageExtension on AppLanguage {
     switch (this) {
       case AppLanguage.english:
         return 'en';
-      case AppLanguage.amharic:
-        return 'am';
-      case AppLanguage.arabic:
-        return 'ar';
+      case AppLanguage.japanese:
+        return 'ja';
     }
   }
 
@@ -110,15 +39,13 @@ extension AppLanguageExtension on AppLanguage {
     switch (this) {
       case AppLanguage.english:
         return const Locale('en', 'US');
-      case AppLanguage.amharic:
-        return const Locale('am', 'ET');
-      case AppLanguage.arabic:
-        return const Locale('ar', 'SA');
+      case AppLanguage.japanese:
+        return const Locale('ja', 'JP');
     }
   }
 }
 
-/// app theme color enum constant
+/// App theme color enum constant
 enum ThemeColor { pink, purple, orange, green, red, gray }
 
 extension ThemeColorExtension on ThemeColor {
@@ -190,7 +117,6 @@ extension ThemeColorExtension on ThemeColor {
     }
   }
 
-  // to get the theme color name from (saved) theme color code (eg: 0 == pink )
   static ThemeColor fromCode(int code) {
     return ThemeColor.values.firstWhere((color) => color.code == code);
   }
