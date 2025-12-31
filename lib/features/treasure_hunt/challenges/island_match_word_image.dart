@@ -107,6 +107,8 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Single
 
     usedQuestionIndices.add(randomIndex);
     currentQuestion = roundQuestions[randomIndex];
+    
+    setState(() {}); // Update UI with new question
   }
 
   void _handleAnswer(String answer) {
