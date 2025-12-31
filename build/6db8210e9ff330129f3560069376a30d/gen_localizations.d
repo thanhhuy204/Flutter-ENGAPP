@@ -1,0 +1,1 @@
+ D:\\Flutter-ENGAPP\\lib\\l10n\\app_localizations_en.dart D:\\Flutter-ENGAPP\\lib\\l10n\\app_localizations_ja.dart D:\\Flutter-ENGAPP\\lib\\l10n\\app_localizations.dart:  D:\\Flutter-ENGAPP\\l10n.yaml D:\\Flutter-ENGAPP\\assets\\translations\\app_en.arb D:\\Flutter-ENGAPP\\assets\\translations\\app_ja.arb
