@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_kids_matching_game/features/vocabulary/domain/vocab_item.dart';
+import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart'; // Import Model mới
 
 class VocabState {
-  final List<VocabItem> vocabList;
-  final VocabItem? selectedVocab;
+  final List<GameItem> vocabList; // Dùng GameItem
+  final GameItem? selectedVocab;  // Dùng GameItem
 
   const VocabState({
     required this.vocabList,
@@ -11,8 +11,8 @@ class VocabState {
   });
 
   VocabState copyWith({
-    List<VocabItem>? vocabList,
-    VocabItem? selectedVocab,
+    List<GameItem>? vocabList,
+    GameItem? selectedVocab,
   }) {
     return VocabState(
       vocabList: vocabList ?? this.vocabList,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_kids_matching_game/features/vocabulary/domain/vocab_item.dart';
-
-class VocabCard extends StatelessWidget {
-  final VocabItem item;
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
+import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
+import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart'; // Lấy Settings
+import 'package:flutter_kids_matching_game/core/constants/setting_choices.dart'; // This was MISSING in my previous response for VocabNotifier!
+class VocabCard extends ConsumerWidget { // Đổi thành ConsumerWidget
+  final GameItem item;
   final VoidCallback onTap;
   final bool isSelected;
 
@@ -14,7 +16,10 @@ class VocabCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Lấy ngôn ngữ hiện tại để hiển thị đúng tên (English/Japanese)
+    final langCode = ref.watch(settingsNotifierProvider).selectedLanguage.languageCode;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -22,60 +27,55 @@ class VocabCard extends StatelessWidget {
         margin: const EdgeInsets.all(8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.orangeAccent.withAlpha(50) : Colors.white,
-          borderRadius: BorderRadius.circular(24), // Bo góc tròn hơn cho thân thiện
+          color: isSelected ? Colors.orangeAccent.withOpacity(0.2) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? Colors.orange.withAlpha(60)
-                  : Colors.black.withAlpha(20),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+                  ? Colors.orange.withOpacity(0.4)
+                  : Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
           border: Border.all(
-            color: isSelected ? Colors.orange : Colors.grey.withAlpha(30),
-            width: 2.5,
+            color: isSelected ? Colors.orange : Colors.grey.withOpacity(0.3),
+            width: 2.0,
           ),
         ),
         child: Column(
-          // Đảm bảo các thành phần phân bổ đều
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Phần chứa ảnh: Cố định tỷ lệ để các ảnh không to nhỏ khác nhau
             Expanded(
-              flex: 4, // Chiếm 4 phần diện tích
+              flex: 4,
               child: Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withAlpha(15), // Nền nhẹ giúp ảnh nổi bật
+                  color: Colors.grey.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Image.asset(
                   item.image,
-                  // BoxFit.contain giúp ảnh giữ nguyên tỉ lệ và nằm gọn trong khung
                   fit: BoxFit.contain,
                   width: double.infinity,
+                  errorBuilder: (_,__,___) => const Icon(Icons.image_not_supported, color: Colors.grey),
                 ),
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Phần chứa chữ: Cố định chiều cao để hàng chữ luôn thẳng hàng
+            const SizedBox(height: 8),
             Expanded(
-              flex: 1, // Chiếm 1 phần diện tích
+              flex: 1,
               child: Center(
                 child: Text(
-                  item.word.toUpperCase(),
+                  item.name(langCode).toUpperCase(), // Hiển thị tên theo ngôn ngữ
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis, // Nếu chữ quá dài sẽ hiện "..."
-                  style: const TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w900, // Chữ đậm hơn cho bé dễ nhìn
-                    color: Colors.brown,
-                    letterSpacing: 1.1,
+                    fontWeight: FontWeight.w900,
+                    color: isSelected ? Colors.orange[800] : Colors.brown,
+                    fontFamily: 'Fredoka', // Dùng font đẹp nếu có
                   ),
                 ),
               ),

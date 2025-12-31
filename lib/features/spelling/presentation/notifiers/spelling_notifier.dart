@@ -1,46 +1,65 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tts/flutter_tts.dart'; // Import để đọc chữ
-import 'package:flutter_kids_matching_game/features/vocabulary/data/vocab_data.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'dart:math';
+
+import 'package:flutter_kids_matching_game/core/data/global_data_source.dart';
+import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
+import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
+import 'package:flutter_kids_matching_game/core/constants/setting_choices.dart'; // Import để dùng extension ngôn ngữ
 import 'spelling_state.dart';
 
 class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
   final FlutterTts _tts = FlutterTts();
+  late String _currentLangCode;
 
   @override
   SpellingState build() {
+    // 1. Lấy cài đặt ngôn ngữ hiện tại
+    final settings = ref.watch(settingsNotifierProvider);
+    _currentLangCode = settings.selectedLanguage.languageCode;
+
     _initTts();
+
+    // 2. Load câu hỏi đầu tiên
     return _loadLevel(0);
   }
 
   void _initTts() async {
-    await _tts.setLanguage("en-US");
-    await _tts.setSpeechRate(0.6); // Đọc chậm một chút cho bé nghe rõ
+    if (_currentLangCode == 'ja') {
+      await _tts.setLanguage("ja-JP");
+    } else {
+      await _tts.setLanguage("en-US");
+    }
+    await _tts.setSpeechRate(0.5);
   }
 
   SpellingState _loadLevel(int index) {
-    final vocab = VocabData.animals[index];
-    List<String> letters = vocab.word.toUpperCase().split('')..shuffle();
+    // Lấy danh sách động vật từ Global Data
+    final List<GameItem> data = GlobalDataSource.animals;
+
+    final item = data[index % data.length];
+
+    // Lấy tên theo ngôn ngữ đã chọn (EN hoặc JP)
+    String word = item.name(_currentLangCode).toUpperCase();
+
+    // Tách chữ cái và xáo trộn
+    List<String> letters = word.split('')..shuffle();
 
     return SpellingState(
-      currentVocab: vocab,
+      currentItem: item,
+      currentWord: word,
       scrambledLetters: letters,
       userGuess: [],
       isSuccess: false,
     );
   }
 
-  // 1. KHI BÉ CHỌN CHỮ
   void pickLetter(int index) {
     if (state.isSuccess) return;
 
     final letter = state.scrambledLetters[index];
-
-    // Đọc âm thanh của chữ cái vừa nhấn
-    // TỐI ƯU TỐC ĐỘ: Không dùng await ở đây để giao diện không bị đợi
-    // Dừng ngay lập tức bất kỳ âm thanh nào đang phát để đọc chữ mới
-    _tts.stop().then((_) {
-      _tts.speak(letter);
-    });
+    _tts.stop();
+    _tts.speak(letter);
 
     final newUserGuess = [...state.userGuess, letter];
     final newScrambled = List<String>.from(state.scrambledLetters)..removeAt(index);
@@ -48,12 +67,10 @@ class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
     _checkResult(newUserGuess, newScrambled);
   }
 
-  // 2. KHI BÉ MUỐN GỠ CHỮ (TRẢ LẠI)
   void removeLetter(int index) {
     if (state.isSuccess) return;
 
     final letter = state.userGuess[index];
-
     final newUserGuess = List<String>.from(state.userGuess)..removeAt(index);
     final newScrambled = [...state.scrambledLetters, letter];
 
@@ -65,8 +82,7 @@ class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
   }
 
   void _checkResult(List<String> guess, List<String> scrambled) {
-    final targetWord = state.currentVocab.word.toUpperCase();
-    bool success = guess.join('') == targetWord;
+    bool success = guess.join('') == state.currentWord;
 
     state = state.copyWith(
       userGuess: guess,
@@ -75,15 +91,12 @@ class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
     );
 
     if (success) {
-      // Khi thắng, máy đọc cả từ để bé ghi nhớ
-      _tts.speak(state.currentVocab.word);
+      _tts.speak(state.currentWord);
     }
   }
 
   void nextLevel() {
-    final allVocabs = VocabData.animals;
-    int nextIndex = allVocabs.indexOf(state.currentVocab) + 1;
-    if (nextIndex >= allVocabs.length) nextIndex = 0;
+    int nextIndex = Random().nextInt(GlobalDataSource.animals.length);
     state = _loadLevel(nextIndex);
   }
 }

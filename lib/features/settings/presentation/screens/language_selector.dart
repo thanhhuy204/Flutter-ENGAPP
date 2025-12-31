@@ -27,9 +27,12 @@ class LanguageSelector extends ConsumerWidget {
           ),
         );
       }).toList(),
-      onChanged: (appLanguage) {
+      onChanged: (appLanguage) async { // 1. Thêm async
         if (appLanguage != null) {
-          context.setLocale(appLanguage.locale);
+          // 2. Thêm await để chờ nạp file ngôn ngữ xong
+          await context.setLocale(appLanguage.locale);
+
+          // 3. Sau đó mới cập nhật Riverpod để vẽ lại màn hình
           ref.read(settingsNotifierProvider.notifier).setLanguage(appLanguage);
         }
       },

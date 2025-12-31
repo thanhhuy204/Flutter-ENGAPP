@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
 import 'package:flutter_kids_matching_game/features/vocabulary/presentation/notifiers/vocab_notifier.dart';
 import 'package:flutter_kids_matching_game/features/vocabulary/presentation/widgets/vocab_card.dart';
-
+import 'package:flutter_kids_matching_game/core/constants/setting_choices.dart'; // This was MISSING in my previous response for VocabNotifier!
 class VocabListScreen extends ConsumerWidget {
   const VocabListScreen({super.key});
 
@@ -10,22 +11,23 @@ class VocabListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(vocabNotifierProvider);
     final notifier = ref.read(vocabNotifierProvider.notifier);
+    final langCode = ref.watch(settingsNotifierProvider).selectedLanguage.languageCode;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Học Từ Vựng"),
+        title: const Text("Dictionary"), // Có thể dùng .tr() nếu muốn
         backgroundColor: Colors.orangeAccent,
       ),
       body: Column(
         children: [
-          // 1. Grid hiển thị danh sách từ vựng
+          // 1. Grid
           Expanded(
             flex: 3,
             child: GridView.builder(
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 1,
+                childAspectRatio: 0.9, // Chỉnh lại tỷ lệ cho đẹp
               ),
               itemCount: state.vocabList.length,
               itemBuilder: (context, index) {
@@ -39,16 +41,15 @@ class VocabListScreen extends ConsumerWidget {
             ),
           ),
 
-          // 2. Khu vực hiển thị câu ví dụ (Chỉ hiện khi có từ được chọn)
+          // 2. Detail Panel (Nếu có chọn)
           if (state.selectedVocab != null)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
+            Container(
               padding: const EdgeInsets.all(20),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -56,25 +57,24 @@ class VocabListScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.volume_up, color: Colors.orange),
+                      IconButton(
+                        icon: const Icon(Icons.volume_up_rounded, color: Colors.orange, size: 32),
+                        onPressed: () => notifier.onWordTap(state.selectedVocab!, ref),
+                      ),
                       const SizedBox(width: 10),
                       Text(
-                        state.selectedVocab!.word,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        state.selectedVocab!.name(langCode),
+                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.orange),
                       ),
                     ],
                   ),
-                  const Divider(),
+                  const SizedBox(height: 5),
                   Text(
-                    state.selectedVocab!.exampleSentence,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+                    // Nếu đang là EN thì hiện sub JA và ngược lại
+                    langCode == 'en' ? state.selectedVocab!.nameJa : state.selectedVocab!.nameEn,
+                    style: const TextStyle(color: Colors.grey, fontSize: 20),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "( ${state.selectedVocab!.translation} )",
-                    style: const TextStyle(color: Colors.grey),
-                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
