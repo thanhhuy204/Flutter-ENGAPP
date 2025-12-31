@@ -1,26 +1,30 @@
-import 'package:flutter_kids_matching_game/features/vocabulary/domain/vocab_item.dart';
+import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 
 class SpellingState {
-  final VocabItem currentVocab;   // Từ vựng hiện tại đang học
-  final List<String> scrambledLetters; // Các chữ cái bị xáo trộn
-  final List<String> userGuess;   // Các chữ cái bé đã nhấn chọn
-  final bool isSuccess;           // Đã hoàn thành đúng chưa
+  final GameItem currentItem;     // Dùng GameItem chuẩn
+  final String currentWord;       // Từ vựng hiện tại (đã được lấy theo EN/JP)
+  final List<String> scrambledLetters;
+  final List<String> userGuess;
+  final bool isSuccess;
 
   SpellingState({
-    required this.currentVocab,
+    required this.currentItem,
+    required this.currentWord,
     required this.scrambledLetters,
     required this.userGuess,
     this.isSuccess = false,
   });
 
   SpellingState copyWith({
-    VocabItem? currentVocab,
+    GameItem? currentItem,
+    String? currentWord,
     List<String>? scrambledLetters,
     List<String>? userGuess,
     bool? isSuccess,
   }) {
     return SpellingState(
-      currentVocab: currentVocab ?? this.currentVocab,
+      currentItem: currentItem ?? this.currentItem,
+      currentWord: currentWord ?? this.currentWord,
       scrambledLetters: scrambledLetters ?? this.scrambledLetters,
       userGuess: userGuess ?? this.userGuess,
       isSuccess: isSuccess ?? this.isSuccess,

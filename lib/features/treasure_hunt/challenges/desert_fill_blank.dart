@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../data/desert_fill_blank_data.dart';
+import '../domain/entities/challenge_question.dart';
 
 class DesertFillBlank extends StatefulWidget {
   final int questionIndex;
@@ -12,30 +15,27 @@ class DesertFillBlank extends StatefulWidget {
 
 class _DesertFillBlankState extends State<DesertFillBlank> {
   final AudioPlayer sfxPlayer = AudioPlayer();
-
-  // KHO CÂU HỎI MỞ RỘNG (15 Câu)
-  final List<Map<String, String>> questions = [
-    {'word': 'CAMEL', 'question': 'C_MEL', 'answer': 'A', 'hint': 'I have humps and I can walk on sand.'},
-    {'word': 'SUN', 'question': 'S_N', 'answer': 'U', 'hint': 'I am very hot and shine in the sky.'},
-    {'word': 'SAND', 'question': 'S_ND', 'answer': 'A', 'hint': 'The desert is full of this yellow dust.'},
-    {'word': 'CACTUS', 'question': 'CA_TUS', 'answer': 'C', 'hint': 'I am a green plant with sharp spikes.'},
-    {'word': 'SNAKE', 'question': 'SNA_E', 'answer': 'K', 'hint': 'I have no legs and I say "Hiss".'},
-    {'word': 'FOX', 'question': 'F_X', 'answer': 'O', 'hint': 'I am a small animal with very big ears.'},
-    {'word': 'HOT', 'question': 'H_T', 'answer': 'O', 'hint': 'The weather in the desert is very...?'},
-    {'word': 'PALM', 'question': 'P_LM', 'answer': 'A', 'hint': 'A tall tree that grows near water.'},
-    {'word': 'WATER', 'question': 'WA_ER', 'answer': 'T', 'hint': 'You must drink me when you are thirsty.'},
-    {'word': 'OASIS', 'question': 'OAS_S', 'answer': 'I', 'hint': 'A place with water in the desert.'},
-    {'word': 'DRY', 'question': 'D_Y', 'answer': 'R', 'hint': 'The desert is not wet, it is...'},
-    {'word': 'DUNE', 'question': 'D_NE', 'answer': 'U', 'hint': 'A hill made of sand.'},
-    {'word': 'GOLD', 'question': 'G_LD', 'answer': 'O', 'hint': 'A shiny yellow treasure.'},
-    {'word': 'TENT', 'question': 'TE_T', 'answer': 'N', 'hint': 'You sleep in this when camping.'},
-    {'word': 'SKY', 'question': 'S_Y', 'answer': 'K', 'hint': 'It is blue and above your head.'},
-  ];
-
+  late List<DesertFillBlankQuestion> questions;
+  late DesertFillBlankQuestion currentQuestion;
+  
   String input = '';
   bool completed = false;
   String error = '';
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    questions = DesertFillBlankData.getQuestions();
+    currentQuestion = questions[widget.questionIndex % questions.length];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload current question when language changes
+    currentQuestion = questions[widget.questionIndex % questions.length];
+  }
 
   @override
   void dispose() {
@@ -51,13 +51,17 @@ class _DesertFillBlankState extends State<DesertFillBlank> {
 
   @override
   Widget build(BuildContext context) {
-    final q = questions[widget.questionIndex % questions.length];
+    final languageCode = context.locale.languageCode;
+    
     return Center(
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Desert Challenge', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orangeAccent)),
+            Text(
+              'desert_challenge'.tr(),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orangeAccent),
+            ),
             const SizedBox(height: 10),
 
             Container(
@@ -68,14 +72,17 @@ class _DesertFillBlankState extends State<DesertFillBlank> {
                   border: Border.all(color: Colors.orange.shade200)
               ),
               child: Text(
-                'Hint: ${q['hint']}',
+                'Hint: ${currentQuestion.getHint(languageCode)}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18, color: Colors.brown, fontStyle: FontStyle.italic),
               ),
             ),
 
             const SizedBox(height: 30),
-            Text(q['question']!, style: const TextStyle(fontSize: 40, letterSpacing: 8, fontWeight: FontWeight.bold, color: Colors.black87)),
+            Text(
+              currentQuestion.questionPattern,
+              style: const TextStyle(fontSize: 40, letterSpacing: 8, fontWeight: FontWeight.bold, color: Colors.black87),
+            ),
 
             const SizedBox(height: 30),
 
@@ -86,7 +93,7 @@ class _DesertFillBlankState extends State<DesertFillBlank> {
                 enabled: !completed,
                 onChanged: (val) {
                   input = val.toUpperCase();
-                  if (input == q['answer']) {
+                  if (input == currentQuestion.answer) {
                     _playSFX(true); // Win
                     completed = true;
                     error = '';
@@ -148,7 +155,10 @@ class _DesertFillBlankState extends State<DesertFillBlank> {
                       ),
                       onPressed: widget.onCompleted,
                       icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
-                      label: const Text("Next Level", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      label: Text(
+                        'next'.tr(),
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
                     ),
                   ],
                 ),

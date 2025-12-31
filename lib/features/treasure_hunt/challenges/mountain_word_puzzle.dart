@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../data/mountain_word_puzzle_data.dart';
+import '../domain/entities/challenge_question.dart';
 
 class MountainWordPuzzle extends StatefulWidget {
   final int questionIndex;
@@ -12,38 +15,31 @@ class MountainWordPuzzle extends StatefulWidget {
 
 class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
   final AudioPlayer sfxPlayer = AudioPlayer();
-
-  // KHO CÂU HỎI MỞ RỘNG (15 Câu)
-  final List<Map<String, dynamic>> questions = [
-    {'word': 'GOAT', 'hint': 'I have horns and climb steep rocks.'},
-    {'word': 'BEAR', 'hint': 'I am big, furry and sleep in a cave.'},
-    {'word': 'WOLF', 'hint': 'I look like a dog and howl at the moon.'},
-    {'word': 'EAGLE', 'hint': 'I am a bird that flies high over mountains.'},
-    {'word': 'FOX', 'hint': 'I have a bushy tail and live in the wild.'},
-    {'word': 'OWL', 'hint': 'I have big eyes and hoot at night.'},
-    {'word': 'ROCK', 'hint': 'I am hard and gray. Mountains are made of me.'},
-    {'word': 'SNOW', 'hint': 'I am white, cold and fall on peaks.'},
-    {'word': 'CAVE', 'hint': 'I am a dark hole in the mountain side.'},
-    {'word': 'PINE', 'hint': 'I am a tall tree that stays green all year.'},
-    {'word': 'HILL', 'hint': 'I am smaller than a mountain.'},
-    {'word': 'COLD', 'hint': 'The opposite of hot. Mountains are...'},
-    {'word': 'HIGH', 'hint': 'Mountains are very...?'},
-    {'word': 'DEER', 'hint': 'I look like Bambi.'},
-    {'word': 'WIND', 'hint': 'I blow strongly on the mountain top.'},
-  ];
+  late List<MountainWordPuzzleQuestion> questions;
+  late MountainWordPuzzleQuestion currentQuestion;
 
   List<String> letters = [];
   List<String> answer = [];
   List<bool> used = [];
   bool completed = false;
   String error = '';
-  late String currentWord;
 
   @override
   void initState() {
     super.initState();
-    currentWord = questions[widget.questionIndex % questions.length]['word'] as String;
-    letters = currentWord.split('');
+    questions = MountainWordPuzzleData.getQuestions();
+    currentQuestion = questions[widget.questionIndex % questions.length];
+    _initializeLetters();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    currentQuestion = questions[widget.questionIndex % questions.length];
+  }
+
+  void _initializeLetters() {
+    letters = currentQuestion.word.split('');
     letters.shuffle();
     answer.clear();
     used = List.filled(letters.length, false);
@@ -62,13 +58,13 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
   }
 
   void checkAnswer() {
-    if (answer.join() == currentWord) {
+    if (answer.join() == currentQuestion.word) {
       _playSFX(true); // Âm thanh thắng
       setState(() {
         completed = true;
         error = '';
       });
-    } else if (answer.length == currentWord.length) {
+    } else if (answer.length == currentQuestion.word.length) {
       _playSFX(false); // Âm thanh thua
       error = 'Try again!';
       Future.delayed(const Duration(milliseconds: 700), () {
@@ -86,14 +82,18 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
 
   @override
   Widget build(BuildContext context) {
-    final q = questions[widget.questionIndex % questions.length];
+    final languageCode = context.locale.languageCode;
+    
     return Center(
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text('Spelling Challenge!', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.deepOrange)),
+            Text(
+              'spelling_challenge'.tr(),
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.deepOrange),
+            ),
             const SizedBox(height: 10),
 
             Container(
@@ -105,7 +105,7 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
                 boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))],
               ),
               child: Text(
-                  q['hint'],
+                  currentQuestion.getHint(languageCode),
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 18, color: Colors.brown, fontStyle: FontStyle.italic)
               ),
@@ -117,7 +117,7 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
               alignment: WrapAlignment.center,
               spacing: 8,
               runSpacing: 8,
-              children: List.generate(currentWord.length, (index) {
+              children: List.generate(currentQuestion.word.length, (index) {
                 String char = index < answer.length ? answer[index] : '';
                 return GestureDetector(
                   onTap: completed ? null : () {
@@ -207,7 +207,10 @@ class _MountainWordPuzzleState extends State<MountainWordPuzzle> {
                       ),
                       onPressed: widget.onCompleted,
                       icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
-                      label: const Text("Next Challenge", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      label: Text(
+                        'next'.tr(),
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
                     )
                   ],
                 ),

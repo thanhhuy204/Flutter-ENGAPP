@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'challenges/jungle_listen_choose.dart';
-import 'challenges/mountain_word_puzzle.dart';
-import 'challenges/desert_fill_blank.dart';
-import 'challenges/ocean_choose_image.dart';
-import 'challenges/island_match_word_image.dart';
+import '../../challenges/jungle_listen_choose.dart';
+import '../../challenges/mountain_word_puzzle.dart';
+import '../../challenges/desert_fill_blank.dart';
+import '../../challenges/ocean_choose_image.dart';
+import '../../challenges/island_match_word_image.dart';
 
 class ChallengeScreen extends StatelessWidget {
   final int level;

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../data/ocean_choose_image_data.dart';
+import '../domain/entities/challenge_question.dart';
 
 class OceanChooseImage extends StatefulWidget {
   final int questionIndex;
@@ -12,85 +15,25 @@ class OceanChooseImage extends StatefulWidget {
 
 class _OceanChooseImageState extends State<OceanChooseImage> {
   final AudioPlayer sfxPlayer = AudioPlayer();
-
-  // KHO CÂU HỎI MỞ RỘNG (Câu đố + Từ vựng)
-  final List<Map<String, dynamic>> questions = [
-    {
-      'riddle': 'I have sharp teeth and fins.\nI am a scary hunter in the deep sea.\nWho am I?',
-      'answer_index': 0, // Shark
-      'options': [
-        {'path': 'assets/images/animals/shark.png', 'label': 'Shark'},
-        {'path': 'assets/images/animals/dolphin.png', 'label': 'Dolphin'},
-        {'path': 'assets/images/animals/fish.png', 'label': 'Fish'},
-        {'path': 'assets/images/animals/whale.png', 'label': 'Whale'},
-      ]
-    },
-    {
-      'riddle': 'I have 8 long arms.\nI can shoot ink to hide from enemies.\nWho am I?',
-      'answer_index': 2, // Octopus
-      'options': [
-        {'path': 'assets/images/animals/crab.png', 'label': 'Crab'},
-        {'path': 'assets/images/animals/fish.png', 'label': 'Fish'},
-        {'path': 'assets/images/animals/octopus.png', 'label': 'Octopus'},
-        {'path': 'assets/images/animals/turtle.png', 'label': 'Turtle'},
-      ]
-    },
-    {
-      'riddle': 'I have a hard shell on my back.\nI have claws and I walk sideways.\nWho am I?',
-      'answer_index': 1, // Crab
-      'options': [
-        {'path': 'assets/images/animals/octopus.png', 'label': 'Octopus'},
-        {'path': 'assets/images/animals/crab.png', 'label': 'Crab'},
-        {'path': 'assets/images/animals/turtle.png', 'label': 'Turtle'},
-        {'path': 'assets/images/animals/shark.png', 'label': 'Shark'},
-      ]
-    },
-    {
-      'riddle': 'I am very smart and friendly.\nI love to jump out of the water.\nWho am I?',
-      'answer_index': 3, // Dolphin
-      'options': [
-        {'path': 'assets/images/animals/shark.png', 'label': 'Shark'},
-        {'path': 'assets/images/animals/whale.png', 'label': 'Whale'},
-        {'path': 'assets/images/animals/fish.png', 'label': 'Fish'},
-        {'path': 'assets/images/animals/dolphin.png', 'label': 'Dolphin'},
-      ]
-    },
-    {
-      'riddle': 'I am the biggest animal in the ocean.\nI can sing songs under the water.\nWho am I?',
-      'answer_index': 0, // Whale
-      'options': [
-        {'path': 'assets/images/animals/whale.png', 'label': 'Whale'},
-        {'path': 'assets/images/animals/shark.png', 'label': 'Shark'},
-        {'path': 'assets/images/animals/dolphin.png', 'label': 'Dolphin'},
-        {'path': 'assets/images/animals/hippopotamus.png', 'label': 'Hippo'},
-      ]
-    },
-    // --- THÊM CÂU MỚI ---
-    {
-      'riddle': 'I am a bird but I cannot fly.\nI love to swim in cold water.\nWho am I?',
-      'answer_index': 2, // Penguin
-      'options': [
-        {'path': 'assets/images/animals/duck.png', 'label': 'Duck'},
-        {'path': 'assets/images/animals/parrot.png', 'label': 'Parrot'},
-        {'path': 'assets/images/animals/penguin.png', 'label': 'Penguin'},
-        {'path': 'assets/images/animals/chicken.png', 'label': 'Chicken'},
-      ]
-    },
-    {
-      'riddle': 'I have scales and I swim in schools.\nI can breathe underwater.\nWho am I?',
-      'answer_index': 1, // Fish
-      'options': [
-        {'path': 'assets/images/animals/dolphin.png', 'label': 'Dolphin'},
-        {'path': 'assets/images/animals/fish.png', 'label': 'Fish'},
-        {'path': 'assets/images/animals/crab.png', 'label': 'Crab'},
-        {'path': 'assets/images/animals/shark.png', 'label': 'Shark'},
-      ]
-    },
-  ];
+  late List<OceanChooseImageQuestion> questions;
+  late OceanChooseImageQuestion currentQuestion;
 
   int? selectedIndex;
   bool isCompleted = false;
   bool isWrong = false;
+
+  @override
+  void initState() {
+    super.initState();
+    questions = OceanChooseImageData.getQuestions();
+    currentQuestion = questions[widget.questionIndex % questions.length];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    currentQuestion = questions[widget.questionIndex % questions.length];
+  }
 
   @override
   void dispose() {
@@ -106,95 +49,86 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
 
   @override
   Widget build(BuildContext context) {
-    final q = questions[widget.questionIndex % questions.length];
+    final languageCode = context.locale.languageCode;
 
     return Center(
       child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Ocean Riddle 🌊',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.blueAccent),
-            ),
-            const SizedBox(height: 20),
-
-            // Khung hiển thị câu đố
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(color: Colors.blue.withOpacity(0.2), blurRadius: 10, offset: Offset(0, 5))
-                ],
-                border: Border.all(color: Colors.blue.shade100, width: 2),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'ocean_challenge'.tr(),
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.blueAccent),
               ),
-              child: Column(
-                children: [
-                  const Icon(Icons.help_outline_rounded, size: 40, color: Colors.orange),
-                  const SizedBox(height: 10),
-                  Text(
-                    q['riddle'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 18, color: Colors.indigo, height: 1.4, fontWeight: FontWeight.w500),
+              const SizedBox(height: 20),
+
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.blue.shade300, width: 2),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black12, offset: Offset(0, 4), blurRadius: 8)
+                  ],
+                ),
+                child: Text(
+                  currentQuestion.getRiddle(languageCode),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                    height: 1.5,
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            if (isWrong)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 10.0),
-                child: Text("Oops! Not quite. Try again!", style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
+                ),
               ),
 
-            // Lưới 4 đáp án
-            SizedBox(
-              width: 340,
-              child: GridView.builder(
+              const SizedBox(height: 40),
+
+              GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 0.85,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.9,
                 ),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  bool isSelected = selectedIndex == index;
-                  bool isCorrectAnswer = index == q['answer_index'];
-
-                  String imagePath = q['options'][index]['path'];
-                  String labelText = q['options'][index]['label'];
-
+                itemCount: currentQuestion.options.length,
+                itemBuilder: (context, i) {
+                  bool isCorrect = (i == currentQuestion.answerIndex);
+                  bool isThisSelected = (selectedIndex == i);
                   Color borderColor = Colors.transparent;
-                  if (isSelected) {
-                    borderColor = isCompleted && isCorrectAnswer ? Colors.green : Colors.red;
+
+                  if (isThisSelected) {
+                    if (isCompleted && isCorrect) {
+                      borderColor = Colors.green;
+                    } else if (isWrong) {
+                      borderColor = Colors.red;
+                    }
                   }
 
                   return GestureDetector(
-                    onTap: isCompleted ? null : () {
+                    onTap: (isCompleted || isWrong) ? null : () {
                       setState(() {
-                        selectedIndex = index;
+                        selectedIndex = i;
                       });
 
-                      if (isCorrectAnswer) {
-                        _playSFX(true); // Win
+                      if (isCorrect) {
+                        _playSFX(true);
                         setState(() {
                           isCompleted = true;
-                          isWrong = false;
                         });
                       } else {
-                        _playSFX(false); // Lose
+                        _playSFX(false);
                         setState(() {
                           isWrong = true;
                         });
-                        Future.delayed(const Duration(seconds: 1), () {
+                        Future.delayed(const Duration(milliseconds: 1200), () {
                           if (mounted) {
                             setState(() {
                               selectedIndex = null;
@@ -206,37 +140,35 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: borderColor,
-                            width: 4,
-                          ),
-                          boxShadow: [
-                            BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 3))
-                          ]
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: borderColor.withOpacity(borderColor == Colors.transparent ? 0 : 1), width: 4),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.1), offset: Offset(0, 4), blurRadius: 6)
+                        ],
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
                             child: Image.asset(
-                              imagePath,
+                              currentQuestion.options[i].imagePath,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.image, size: 50, color: Colors.grey);
+                                return Icon(Icons.water_drop, size: 50, color: Colors.blue.shade300);
                               },
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 10),
                           Text(
-                            labelText,
+                            currentQuestion.options[i].getLabel(languageCode),
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueGrey
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey,
                             ),
                           ),
                         ],
@@ -245,18 +177,19 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
                   );
                 },
               ),
-            ),
 
-            if (isCompleted)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  duration: const Duration(milliseconds: 500),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: ElevatedButton.icon(
+              if (isCompleted)
+                Padding(
+                  padding: const EdgeInsets.only(top: 40.0, bottom: 20),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.emoji_events, color: Colors.amber, size: 70),
+                      const SizedBox(height: 10),
+                      const Text("Amazing!", style: TextStyle(fontSize: 28, color: Colors.green, fontWeight: FontWeight.bold)),
+
+                      const SizedBox(height: 25),
+
+                      ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -265,13 +198,16 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
                         ),
                         onPressed: widget.onCompleted,
                         icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
-                        label: const Text("Next Level", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                        label: Text(
+                          'next'.tr(),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:math';
+import '../data/island_quiz_data.dart';
+import '../domain/entities/challenge_question.dart';
 
 class IslandMatchWordImage extends StatefulWidget {
   final int questionIndex;
@@ -16,7 +19,7 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Single
   final AudioPlayer sfxPlayer = AudioPlayer();
   late AnimationController _shakeController;
 
-  // --- TRẠNG THÁI GAME ---
+  // Game state
   int currentRound = 1;
   int maxRounds = 5;
   late int maxHP;
@@ -28,135 +31,33 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Single
   bool isRoundVictory = false;
   bool isGameCompleted = false;
 
-  late Map<String, dynamic> currentQuestion;
+  late IslandQuizQuestion currentQuestion;
   final Random _random = Random();
-
-  // Danh sách lưu các index câu hỏi đã xuất hiện để không lặp lại
   List<int> usedQuestionIndices = [];
-
-  // --- KHO CÂU HỎI TIẾNG ANH (Không Toán, Image chỉ hiện ảnh) ---
-  final List<Map<String, dynamic>> questionPool = [
-    // --- ANIMALS (Động vật) ---
-    {'type': 'quiz', 'q': 'Which animal is the King of the Jungle?', 'opts': ['Lion', 'Tiger', 'Cat', 'Dog'], 'a': 'Lion'},
-    {'type': 'quiz', 'q': 'Which animal gives us milk?', 'opts': ['Cow', 'Dog', 'Cat', 'Bird'], 'a': 'Cow'},
-    {'type': 'quiz', 'q': 'Which bird cannot fly?', 'opts': ['Penguin', 'Parrot', 'Eagle', 'Owl'], 'a': 'Penguin'},
-    {'type': 'quiz', 'q': 'I have a long neck. Who am I?', 'opts': ['Giraffe', 'Elephant', 'Hippo', 'Lion'], 'a': 'Giraffe'},
-    {'type': 'quiz', 'q': 'I love to eat bananas.', 'opts': ['Monkey', 'Tiger', 'Shark', 'Zebra'], 'a': 'Monkey'},
-    {'type': 'quiz', 'q': 'I am big and gray with a long nose.', 'opts': ['Elephant', 'Mouse', 'Cat', 'Ant'], 'a': 'Elephant'},
-
-    // --- COLORS (Màu sắc) ---
-    {'type': 'quiz', 'q': 'What color is a strawberry?', 'opts': ['Red', 'Blue', 'Yellow', 'Green'], 'a': 'Red'},
-    {'type': 'quiz', 'q': 'What color is the sky?', 'opts': ['Blue', 'Green', 'Red', 'Yellow'], 'a': 'Blue'},
-    {'type': 'quiz', 'q': 'What color is a banana?', 'opts': ['Yellow', 'Purple', 'Pink', 'Black'], 'a': 'Yellow'},
-    {'type': 'quiz', 'q': 'What color is grass?', 'opts': ['Green', 'Red', 'Blue', 'Orange'], 'a': 'Green'},
-    {'type': 'quiz', 'q': 'Color of the night sky?', 'opts': ['Black', 'White', 'Pink', 'Orange'], 'a': 'Black'},
-
-    // --- FRUITS & FOOD (Trái cây & Đồ ăn) ---
-    {'type': 'quiz', 'q': 'Which one is a fruit?', 'opts': ['Apple', 'Carrot', 'Potato', 'Onion'], 'a': 'Apple'},
-    {'type': 'quiz', 'q': 'I am yellow and sour.', 'opts': ['Lemon', 'Apple', 'Grape', 'Banana'], 'a': 'Lemon'},
-    {'type': 'quiz', 'q': 'Rabbits love to eat...', 'opts': ['Carrots', 'Pizza', 'Fish', 'Candy'], 'a': 'Carrots'},
-
-    // --- OPPOSITES & GENERAL (Đối lập & Tổng hợp) ---
-    {'type': 'quiz', 'q': 'Opposite of HOT is...', 'opts': ['Cold', 'Warm', 'Fire', 'Sun'], 'a': 'Cold'},
-    {'type': 'quiz', 'q': 'Opposite of BIG is...', 'opts': ['Small', 'Tall', 'Fat', 'Huge'], 'a': 'Small'},
-    {'type': 'quiz', 'q': 'Opposite of UP is...', 'opts': ['Down', 'Left', 'Right', 'Top'], 'a': 'Down'},
-    {'type': 'quiz', 'q': 'Opposite of HAPPY is...', 'opts': ['Sad', 'Funny', 'Good', 'Nice'], 'a': 'Sad'},
-    {'type': 'quiz', 'q': 'What do you use to see?', 'opts': ['Eyes', 'Ears', 'Nose', 'Mouth'], 'a': 'Eyes'},
-    {'type': 'quiz', 'q': 'What do you use to walk?', 'opts': ['Legs', 'Hands', 'Ears', 'Nose'], 'a': 'Legs'},
-    {'type': 'quiz', 'q': 'Fish live in...', 'opts': ['Water', 'Sky', 'Tree', 'Sand'], 'a': 'Water'},
-
-    // --- FILL IN THE BLANK (Điền từ) ---
-    {'type': 'fill', 'q': 'Z E _ R A', 'hint': 'Black and white stripes.', 'a': 'B'},
-    {'type': 'fill', 'q': 'C _ T', 'hint': 'Says "Meow".', 'a': 'A'},
-    {'type': 'fill', 'q': 'S _ A R K', 'hint': 'Dangerous fish.', 'a': 'H'},
-    {'type': 'fill', 'q': 'D _ G', 'hint': 'Man\'s best friend.', 'a': 'O'},
-    {'type': 'fill', 'q': 'P I _ K', 'hint': 'A lovely color.', 'a': 'N'},
-    {'type': 'fill', 'q': 'B L _ E', 'hint': 'Color of the ocean.', 'a': 'U'},
-    {'type': 'fill', 'q': 'A P P L _', 'hint': 'A red tasty fruit.', 'a': 'E'},
-    {'type': 'fill', 'q': 'P I Z _ A', 'hint': 'Yummy Italian food.', 'a': 'Z'},
-    {'type': 'fill', 'q': 'M I _ K', 'hint': 'White drink from cows.', 'a': 'L'},
-    {'type': 'fill', 'q': 'B _ O K', 'hint': 'You read this.', 'a': 'O'},
-    {'type': 'fill', 'q': 'S _ N', 'hint': 'Shines in the day.', 'a': 'U'},
-    {'type': 'fill', 'q': 'M O _ N', 'hint': 'Shines at night.', 'a': 'O'},
-    {'type': 'fill', 'q': 'C _ R', 'hint': 'It has 4 wheels.', 'a': 'A'},
-    {'type': 'fill', 'q': 'B A _ L', 'hint': 'Round toy.', 'a': 'L'},
-
-    // --- IMAGE CHOICE (Chọn ảnh - KHÔNG HIỆN TÊN) ---
-    // Chỉ sử dụng ảnh có sẵn trong thư mục assets
-    {
-      'type': 'image', 'q': 'Find the TIGER!',
-      'opts': [
-        {'txt': 'Tiger', 'img': 'assets/images/animals/tiger.png'},
-        {'txt': 'Lion', 'img': 'assets/images/animals/lion.png'},
-        {'txt': 'Cat', 'img': 'assets/images/animals/cat.png'},
-        {'txt': 'Dog', 'img': 'assets/images/animals/dog.png'}
-      ],
-      'a': 'Tiger'
-    },
-    {
-      'type': 'image', 'q': 'Where is the ELEPHANT?',
-      'opts': [
-        {'txt': 'Elephant', 'img': 'assets/images/animals/elephant.png'},
-        {'txt': 'Hippo', 'img': 'assets/images/animals/hippopotamus.png'},
-        {'txt': 'Rhino', 'img': 'assets/images/animals/rhinoceros.png'},
-        {'txt': 'Zebra', 'img': 'assets/images/animals/zebra.png'}
-      ],
-      'a': 'Elephant'
-    },
-    {
-      'type': 'image', 'q': 'Tap the PARROT',
-      'opts': [
-        {'txt': 'Parrot', 'img': 'assets/images/animals/parrot.png'},
-        {'txt': 'Fish', 'img': 'assets/images/animals/fish.png'},
-        {'txt': 'Owl', 'img': 'assets/images/animals/owl.png'},
-        {'txt': 'Chicken', 'img': 'assets/images/animals/chicken.png'}
-      ],
-      'a': 'Parrot'
-    },
-    {
-      'type': 'image', 'q': 'Which one lives in water?',
-      'opts': [
-        {'txt': 'Dolphin', 'img': 'assets/images/animals/dolphin.png'},
-        {'txt': 'Cat', 'img': 'assets/images/animals/cat.png'},
-        {'txt': 'Monkey', 'img': 'assets/images/animals/monkey.png'},
-        {'txt': 'Goat', 'img': 'assets/images/animals/goat.png'}
-      ],
-      'a': 'Dolphin'
-    },
-    {
-      'type': 'image', 'q': 'Tap the RED fruit',
-      'opts': [
-        {'txt': 'Apple', 'img': 'assets/images/fruits/apple.png'},
-        {'txt': 'Banana', 'img': 'assets/images/fruits/banana.png'},
-        {'txt': 'Grape', 'img': 'assets/images/fruits/grapes.png'},
-        {'txt': 'Lemon', 'img': 'assets/images/fruits/lemon.png'}
-      ],
-      'a': 'Apple'
-    },
-    {
-      'type': 'image', 'q': 'Find the YELLOW fruit',
-      'opts': [
-        {'txt': 'Banana', 'img': 'assets/images/fruits/banana.png'},
-        {'txt': 'Cherry', 'img': 'assets/images/fruits/cherry.png'},
-        {'txt': 'Blueberry', 'img': 'assets/images/fruits/blueberry.png'},
-        {'txt': 'Avocado', 'img': 'assets/images/fruits/avocado.png'}
-      ],
-      'a': 'Banana'
-    },
-  ];
+  late List<IslandQuizQuestion> questionPool;
 
   @override
   void initState() {
     super.initState();
-    _shakeController = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
-    _playBGM();
+    questionPool = IslandQuizData.getQuestions();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _playBossBGM(); // Play One Piece music right away
     _startRound(1);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    questionPool = IslandQuizData.getQuestions();
+  }
+
   void _playBGM() async {
-    await bgmPlayer.setVolume(0.3);
     await bgmPlayer.setReleaseMode(ReleaseMode.loop);
-    await bgmPlayer.play(AssetSource('audio/onepiece.mp3'));
+    await bgmPlayer.setVolume(0.3);
+    await bgmPlayer.play(AssetSource('audio/bgm.mp3'));
   }
 
   void _playSFX(bool isWin) async {
@@ -168,260 +69,313 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Single
   @override
   void dispose() {
     _shakeController.dispose();
-    bgmPlayer.stop();
     bgmPlayer.dispose();
     sfxPlayer.dispose();
     super.dispose();
   }
 
   void _startRound(int round) {
-    setState(() {
-      currentRound = round;
-      isRoundVictory = false;
-      maxHP = round * 20;
-      currentHP = maxHP;
-      bossImage = 'assets/images/treasures/treasure_pirateking$round.png';
-    });
+    currentRound = round;
+    maxHP = 30 + (round * 10);
+    currentHP = maxHP;
+    bossImage = 'assets/images/treasures/treasure_pirateking$round.png';
+    isRoundVictory = false;
+    usedQuestionIndices.clear(); // Clear for each new round
     _pickUniqueRandomQuestion();
+    setState(() {});
+  }
+  
+  void _playBossBGM() async {
+    await bgmPlayer.stop();
+    await bgmPlayer.setReleaseMode(ReleaseMode.loop);
+    await bgmPlayer.setVolume(0.5); // Slightly louder for epic battle
+    await bgmPlayer.play(AssetSource('audio/onepiece.mp3'));
   }
 
   void _pickUniqueRandomQuestion() {
-    setState(() {
-      if (usedQuestionIndices.length >= questionPool.length) {
-        usedQuestionIndices.clear();
-      }
+    // Get questions for current round
+    final roundQuestions = IslandQuizData.getQuestionsForRound(currentRound);
+    
+    if (usedQuestionIndices.length >= roundQuestions.length) {
+      usedQuestionIndices.clear();
+    }
 
-      int randomIndex;
-      do {
-        randomIndex = _random.nextInt(questionPool.length);
-      } while (usedQuestionIndices.contains(randomIndex));
+    int randomIndex;
+    do {
+      randomIndex = _random.nextInt(roundQuestions.length);
+    } while (usedQuestionIndices.contains(randomIndex));
 
-      usedQuestionIndices.add(randomIndex);
-
-      currentQuestion = questionPool[randomIndex];
-
-      if (currentQuestion['type'] == 'quiz') {
-        (currentQuestion['opts'] as List).shuffle();
-      } else if (currentQuestion['type'] == 'image') {
-        (currentQuestion['opts'] as List).shuffle();
-      }
-    });
+    usedQuestionIndices.add(randomIndex);
+    currentQuestion = roundQuestions[randomIndex];
   }
 
   void _handleAnswer(String answer) {
-    if (isRoundVictory || isGameCompleted) return;
-
-    bool isCorrect = (answer == currentQuestion['a']);
-
-    if (isCorrect) {
+    if (answer == currentQuestion.answer) {
       _playSFX(true);
       setState(() {
-        currentHP -= 20;
-        if (currentHP < 0) currentHP = 0;
-        isWrongAnim = true;
+        currentHP -= 15;
+        isHealingAnim = true;
       });
-      _shakeController.forward(from: 0).then((_) => setState(() => isWrongAnim = false));
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) setState(() => isHealingAnim = false);
+      });
 
       if (currentHP <= 0) {
         _handleBossDefeated();
       } else {
-        Future.delayed(const Duration(seconds: 1), _pickUniqueRandomQuestion);
+        Future.delayed(const Duration(milliseconds: 1000), _pickUniqueRandomQuestion);
       }
     } else {
       _playSFX(false);
-      setState(() {
-        currentHP += 10;
-        if (currentHP > maxHP) currentHP = maxHP;
-        isHealingAnim = true;
+      setState(() => isWrongAnim = true);
+      _shakeController.forward(from: 0.0).then((_) {
+        if (mounted) setState(() => isWrongAnim = false);
       });
-      Future.delayed(const Duration(milliseconds: 800), () => setState(() => isHealingAnim = false));
     }
   }
 
   void _handleBossDefeated() {
-    if (currentRound < maxRounds) {
-      setState(() {
-        isRoundVictory = true;
+    setState(() {
+      currentHP = 0;
+      isRoundVictory = true;
+    });
+
+    if (currentRound >= maxRounds) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) setState(() => isGameCompleted = true);
       });
-    } else {
-      setState(() {
-        isGameCompleted = true;
-      });
-      bgmPlayer.stop();
-      _playSFX(true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isGameCompleted) {
+      return _buildFinalVictory();
+    }
+
     return Center(
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Text("BOSS BATTLE: ROUND $currentRound",
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.indigo)),
-            const SizedBox(height: 20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'island_challenge'.tr(),
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Round $currentRound / $maxRounds',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.purple),
+              ),
 
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                AnimatedBuilder(
-                  animation: _shakeController,
-                  builder: (context, child) {
-                    double offset = sin(_shakeController.value * 20) * 10;
-                    return Transform.translate(
-                      offset: Offset(offset, 0),
-                      child: child,
-                    );
-                  },
-                  child: SizedBox(
-                    height: 250,
-                    width: 250,
-                    child: Image.asset(
-                      bossImage,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_,__,___) => Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.warning, size: 50, color: Colors.red),
-                          Text("Missing: $bossImage", textAlign: TextAlign.center),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                if (isHealingAnim)
-                  Positioned(
-                    right: 20, top: 20,
-                    child: Text("+10", style: TextStyle(color: Colors.green.shade800, fontSize: 32, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 2, color: Colors.white)])),
-                  ),
-                if (isWrongAnim)
-                  Positioned(
-                    left: 20, top: 20,
-                    child: const Text("-20", style: TextStyle(color: Colors.red, fontSize: 40, fontWeight: FontWeight.bold, shadows: [Shadow(blurRadius: 2, color: Colors.white)])),
-                  )
-              ],
-            ),
+              const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60.0),
-              child: Column(
+              // Boss HP Bar
+              Stack(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: currentHP / maxHP,
-                      minHeight: 20,
-                      backgroundColor: Colors.grey.shade300,
-                      color: currentHP > maxHP/2 ? Colors.green : Colors.red,
+                  Container(
+                    height: 25,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.black54, width: 2),
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text("HP: $currentHP / $maxHP", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    height: 25,
+                    width: MediaQuery.of(context).size.width * 0.85 * (currentHP / maxHP),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: currentHP > maxHP * 0.5
+                            ? [Colors.green, Colors.lightGreen]
+                            : currentHP > maxHP * 0.2
+                                ? [Colors.orange, Colors.yellow]
+                                : [Colors.red, Colors.deepOrange],
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 10),
+              Text(
+                'HP: $currentHP / $maxHP',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            if (isGameCompleted)
-              _buildFinalVictory()
-            else if (isRoundVictory)
-              _buildNextRoundButton()
-            else
-              _buildQuestionPanel(),
-          ],
+              // Boss Image - Bigger size
+              AnimatedBuilder(
+                animation: _shakeController,
+                builder: (context, child) {
+                  final offset = sin(_shakeController.value * pi * 4) * 10;
+                  return Transform.translate(
+                    offset: Offset(offset, 0),
+                    child: child,
+                  );
+                },
+                child: Image.asset(
+                  bossImage,
+                  width: 250,
+                  height: 250,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.shield, size: 150, color: Colors.deepPurple),
+                ),
+              ),
+
+              if (isHealingAnim)
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    '💥 Hit! -15 HP',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+                  ),
+                ),
+
+              if (isWrongAnim)
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    '❌ Wrong!',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
+                  ),
+                ),
+
+              const SizedBox(height: 30),
+
+              if (!isRoundVictory) _buildQuestionPanel(),
+
+              if (isRoundVictory) _buildNextRoundButton(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildQuestionPanel() {
+    final languageCode = context.locale.languageCode;
+    
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [const BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0,4))],
-          border: Border.all(color: Colors.indigo.shade200, width: 2)
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(0, 4), blurRadius: 8)],
       ),
       child: Column(
         children: [
-          Text(currentQuestion['type'] == 'fill' ? 'Fill the Blank!' : 'Answer Quickly!',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
-          const SizedBox(height: 10),
-          Text(
-            currentQuestion['q'],
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.indigo),
-          ),
-          if (currentQuestion['type'] == 'fill')
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text("Hint: ${currentQuestion['hint']}", style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.brown)),
+          // Question with optional image
+          if (currentQuestion.questionImagePath != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(
+                currentQuestion.questionImagePath!,
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
+              ),
             ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 15),
+          ],
+          
+          Text(
+            currentQuestion.getQuestion(languageCode),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87, height: 1.4),
+          ),
 
-          // 1. TRẮC NGHIỆM
-          if (currentQuestion['type'] == 'quiz')
-            Wrap(
-              spacing: 12, runSpacing: 12, alignment: WrapAlignment.center,
-              children: (currentQuestion['opts'] as List<String>).map((opt) {
-                return ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo.shade50,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    elevation: 2,
-                  ),
-                  onPressed: () => _handleAnswer(opt),
-                  child: Text(opt, style: const TextStyle(fontSize: 18, color: Colors.indigo, fontWeight: FontWeight.bold)),
-                );
-              }).toList(),
-            )
-          // 2. ĐIỀN TỪ
-          else if (currentQuestion['type'] == 'fill')
-            Wrap(
-              spacing: 10, runSpacing: 10, alignment: WrapAlignment.center,
-              children: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').map((char) {
-                String ans = currentQuestion['a'];
-                if (!"AEOILMNSTRBZHKUDGP".contains(char) && char != ans) return const SizedBox.shrink();
-                return ChoiceChip(
-                  label: Text(char, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  selected: false,
-                  onSelected: (_) => _handleAnswer(char),
-                  backgroundColor: Colors.orange.shade100,
-                  padding: const EdgeInsets.all(12),
-                );
-              }).toList(),
-            )
-          // 3. CHỌN HÌNH ẢNH (Chỉ hiện hình, không hiện chữ)
-          else if (currentQuestion['type'] == 'image')
-              Wrap(
-                spacing: 15, runSpacing: 15, alignment: WrapAlignment.center,
-                children: (currentQuestion['opts'] as List).map((opt) {
-                  return GestureDetector(
-                    onTap: () => _handleAnswer(opt['txt']),
-                    child: Container(
-                      height: 90, width: 90, // Kích thước ảnh
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300, width: 2),
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.white,
-                          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0,2))]
-                      ),
-                      child: Image.asset(
-                          opt['img'],
-                          fit: BoxFit.contain,
-                          errorBuilder: (_,__,___) => const Icon(Icons.image)
-                      ),
-                    ),
-                  );
-                }).toList(),
-              )
+          const SizedBox(height: 25),
+
+          // Options with images in a grid - smaller size
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: currentQuestion.options.length,
+            itemBuilder: (context, index) {
+              final opt = currentQuestion.options[index];
+              return _buildOptionCard(opt);
+            },
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOptionCard(IslandQuizOption option) {
+    return InkWell(
+      onTap: () => _handleAnswer(option.text),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.deepPurple.withOpacity(0.3), width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.deepPurple.withOpacity(0.15),
+              offset: const Offset(0, 3),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    option.imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.image_not_supported,
+                      size: 40,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.withOpacity(0.08),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+              ),
+              child: Text(
+                option.text,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -429,45 +383,72 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Single
   Widget _buildNextRoundButton() {
     return Column(
       children: [
-        const Icon(Icons.star, color: Colors.orange, size: 60),
-        Text("BOSS $currentRound DEFEATED!", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
-        const SizedBox(height: 20),
+        const Icon(Icons.check_circle, color: Colors.green, size: 80),
+        const SizedBox(height: 15),
+        Text(
+          'congratulations'.tr(),
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green),
+        ),
+        const SizedBox(height: 25),
+
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepOrange,
+            backgroundColor: Colors.deepPurple,
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            elevation: 8,
           ),
           onPressed: () {
             _startRound(currentRound + 1);
           },
-          icon: const Icon(Icons.arrow_forward, color: Colors.white),
-          label: const Text("Next Boss", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
-        )
+          icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
+          label: Text(
+            'Round ${currentRound + 1}',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildFinalVictory() {
-    return Column(
-      children: [
-        const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 80),
-        const Text("ISLAND CLEARED!", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.indigo)),
-        const SizedBox(height: 10),
-        const Text("You are the Pirate King now!", style: TextStyle(fontSize: 16, color: Colors.grey)),
-        const SizedBox(height: 30),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            elevation: 10,
-          ),
-          onPressed: widget.onCompleted,
-          icon: const Icon(Icons.check_circle, color: Colors.white, size: 30),
-          label: const Text("Claim Treasure", style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold)),
-        )
-      ],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.emoji_events, color: Colors.amber, size: 100),
+            const SizedBox(height: 20),
+            Text(
+              'you_win'.tr(),
+              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.orange),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              'congratulations'.tr(),
+              style: const TextStyle(fontSize: 24, color: Colors.green),
+            ),
+
+            const SizedBox(height: 40),
+
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                elevation: 10,
+              ),
+              onPressed: widget.onCompleted,
+              icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 30),
+              label: Text(
+                'next'.tr(),
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,182 +1,140 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_kids_matching_game/features/spelling/presentation/screens/spelling_screen.dart';
-import 'features/treasure_hunt/treasure_hunt_screen.dart';
 import 'package:flutter_kids_matching_game/core/theme/app_theme.dart';
 
-class HomeScreen extends StatefulWidget {
+// Import các màn hình game mới
+import 'package:flutter_kids_matching_game/features/vocabulary/presentation/screens/vocab_list_screen.dart';
+import 'package:flutter_kids_matching_game/features/spelling/presentation/screens/spelling_screen.dart';
+import 'features/treasure_hunt/presentation/screens/treasure_hunt_screen.dart';
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('master_games').tr(),
+        title: const Text('master_games').tr(), // Đã dùng khóa dịch
         centerTitle: true,
+        backgroundColor: AppTheme.primaryColor,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, size: 36),
+            icon: const Icon(Icons.settings, color: Colors.white, size: 28),
             onPressed: () => Navigator.pushNamed(context, '/setting'),
           ),
         ],
       ),
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.white, AppTheme.primaryColor],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.primaryColor.withOpacity(0.8), Colors.white],
           ),
-          // SỬA LỖI OVERFLOW: Bọc SingleChildScrollView để có thể cuộn
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'lets_play'.tr(),
-                    style: Theme.of(context).textTheme.displayMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // --- GAME CHÍNH: TREASURE HUNT ---
+              _buildMainGameCard(
+                context,
+                title: 'treasure_hunt'.tr(),
+                icon: Icons.map_outlined,
+                color: Colors.orange,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TreasureHuntScreen())),
+              ),
 
-                  // Mascot Image
-                  const Center(
-                    child: Material(
-                      elevation: 8.0,
-                      shape: CircleBorder(),
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage('assets/images/kid_mascot.png'),
-                        radius: 80, // Giảm nhẹ radius để tiết kiệm không gian
-                      ),
+              const SizedBox(height: 20),
+              Text('learning_zone'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54)),
+              const SizedBox(height: 10),
+
+              // --- KHU VỰC HỌC TẬP ---
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMiniGameCard(
+                      context,
+                      title: 'vocabulary'.tr(),
+                      icon: Icons.menu_book_rounded,
+                      color: Colors.purple,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VocabListScreen())),
                     ),
                   ),
-
-                  const SizedBox(height: 30),
-
-                  // Game Buttons - Danh sách các nút bấm
-                  GameButton(
-                    label: 'color_game'.tr(),
-                    color: Colors.orange,
-                    icon: Icons.color_lens,
-                    onTap: () => Navigator.pushNamed(context, '/colorGame'),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  GameButton(
-                    label: 'animal_game'.tr(),
-                    color: Colors.green,
-                    icon: Icons.pets,
-                    onTap: () => Navigator.pushNamed(context, '/animalGame'),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  GameButton(
-                    label: 'fruit_game'.tr(),
-                    color: Colors.red,
-                    icon: Icons.local_dining,
-                    onTap: () => Navigator.pushNamed(context, '/fruitGame'),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // NÚT MỚI: Vocabulary
-                  GameButton(
-                    label: 'vocabulary_learning'.tr(),
-                    color: Colors.purple,
-                    icon: Icons.menu_book_rounded,
-                    onTap: () => Navigator.pushNamed(context, '/vocabulary'),
-                  ),
-
-                  // Tìm đến chỗ các GameButton cũ và thêm vào phía dưới
-                  const SizedBox(height: 20),
-
-                  GameButton(
-                    label: 'spelling_game'.tr(), // Bạn nhớ thêm key này vào file JSON nhé
-                    color: Colors.blueAccent,    // Màu xanh dương cho khác biệt
-                    icon: Icons.abc_rounded,     // Icon chữ ABC rất hợp với đánh vần
-                    onTap: () {
-                      Navigator.pushNamed(context, '/spelling');
-                    },
-                  ),
-                  // Khoảng trống dưới cùng để cuộn mượt hơn
-                  const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orangeAccent,
-                        minimumSize: const Size(double.infinity, 56),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                      ),
-                      icon: const Icon(Icons.map, color: Colors.white, size: 32),
-                      label: const Text(
-                        'Treasure Hunt Game',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const TreasureHuntScreen()),
-                        );
-                      },
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: _buildMiniGameCard(
+                      context,
+                      title: 'spelling'.tr(),
+                      icon: Icons.abc_rounded,
+                      color: Colors.blue,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SpellingScreen())),
                     ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
-}
 
-class GameButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const GameButton({
-    Key? key,
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      // Sử dụng màu sắc truyền vào cho nút bấm
-      style: AppTheme.elevatedButtonStyle().copyWith(
-        backgroundColor: WidgetStateProperty.all(color),
-      ),
-      onPressed: onTap,
-      icon: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
+  Widget _buildMainGameCard(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 160,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [BoxShadow(color: color.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 5))],
         ),
-        child: Icon(icon, size: 30, color: color),
+        child: Stack(
+          children: [
+            Positioned(right: -20, bottom: -20, child: Icon(icon, size: 150, color: Colors.white.withOpacity(0.2))),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(20)),
+                    child: Text("featured".tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(title, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      label: Text(
-        label,
-        style: const TextStyle(fontSize: 20, color: Colors.white),
+    );
+  }
+
+  Widget _buildMiniGameCard(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(radius: 25, backgroundColor: color.withOpacity(0.1), child: Icon(icon, color: color, size: 30)),
+            const SizedBox(height: 10),
+            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
+        ),
       ),
     );
   }

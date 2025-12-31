@@ -24,19 +24,20 @@ class SpellingScreen extends ConsumerWidget {
             Container(
               height: 200,
               padding: const EdgeInsets.all(20),
-              child: Image.asset(state.currentVocab.image),
+              child: Image.asset(
+                state.currentItem.image, // SỬA: dùng currentItem
+                fit: BoxFit.contain,
+                errorBuilder: (_,__,___) => const Icon(Icons.image, size: 100),
+              ),
             ),
 
-            // Các ô đáp án bé đang điền
-            // Trong spelling_screen.dart, tìm đoạn hiển thị các ô đáp án:
-
+            // Các ô đáp án
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 10,
-              children: List.generate(state.currentVocab.word.length, (i) {
+              children: List.generate(state.currentWord.length, (i) {
                 String char = i < state.userGuess.length ? state.userGuess[i] : "";
                 return GestureDetector(
-                  // NẾU Ô CÓ CHỮ THÌ CHO PHÉP NHẤN ĐỂ GỠ
                   onTap: char.isNotEmpty ? () => notifier.removeLetter(i) : null,
                   child: _LetterBox(
                       char: char,
@@ -49,12 +50,13 @@ class SpellingScreen extends ConsumerWidget {
 
             const Spacer(),
 
-            // Danh sách chữ cái bị xáo trộn để bé chọn
+            // Chữ cái xáo trộn để chọn
             if (!state.isSuccess)
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Wrap(
                   spacing: 15, runSpacing: 15,
+                  alignment: WrapAlignment.center,
                   children: state.scrambledLetters.asMap().entries.map((entry) {
                     return GestureDetector(
                       onTap: () => notifier.pickLetter(entry.key),
@@ -64,16 +66,21 @@ class SpellingScreen extends ConsumerWidget {
                 ),
               ),
 
-            // Nút chuyển màn khi thắng
             if (state.isSuccess)
-              ElevatedButton.icon(
-                onPressed: () => notifier.nextLevel(),
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text("Next Word"),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding: const EdgeInsets.all(20)),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 40.0),
+                child: ElevatedButton.icon(
+                  onPressed: () => notifier.nextLevel(),
+                  icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                  label: const Text("Next Word", style: TextStyle(color: Colors.white, fontSize: 20)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15)
+                  ),
+                ),
               ),
 
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -81,7 +88,6 @@ class SpellingScreen extends ConsumerWidget {
   }
 }
 
-// Widget con cho ô chữ cái
 class _LetterBox extends StatelessWidget {
   final String char;
   final bool isFilled;
@@ -98,7 +104,7 @@ class _LetterBox extends StatelessWidget {
         border: Border.all(color: Colors.brown, width: 2),
       ),
       child: Center(
-        child: Text(char, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+        child: Text(char, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blueGrey)),
       ),
     );
   }
@@ -115,7 +121,7 @@ class _LetterTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.blueAccent,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 4))],
+        boxShadow: [const BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 4))],
       ),
       child: Center(
         child: Text(char, style: const TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold)),

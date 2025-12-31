@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:audioplayers/audioplayers.dart'; // Thêm thư viện âm thanh
+import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../data/jungle_listen_choose_data.dart';
+import '../domain/entities/challenge_question.dart';
 
 class JungleListenChoose extends StatefulWidget {
   final int questionIndex;
@@ -13,92 +16,9 @@ class JungleListenChoose extends StatefulWidget {
 
 class _JungleListenChooseState extends State<JungleListenChoose> {
   final FlutterTts flutterTts = FlutterTts();
-  final AudioPlayer sfxPlayer = AudioPlayer(); // Player cho hiệu ứng
-
-  // KHO CÂU HỎI MỞ RỘNG (Dùng ảnh có sẵn trong assets)
-  final List<Map<String, dynamic>> questions = [
-    {
-      'word': 'Monkey',
-      'options': [
-        'assets/images/animals/monkey.png',
-        'assets/images/animals/lion.png',
-        'assets/images/animals/elephant.png',
-        'assets/images/animals/zebra.png'
-      ],
-      'answer': 0,
-    },
-    {
-      'word': 'Tiger',
-      'options': [
-        'assets/images/animals/giraffe.png',
-        'assets/images/animals/tiger.png',
-        'assets/images/animals/fox.png',
-        'assets/images/animals/deer.png'
-      ],
-      'answer': 1,
-    },
-    {
-      'word': 'Lion',
-      'options': [
-        'assets/images/animals/zebra.png',
-        'assets/images/animals/lion.png',
-        'assets/images/animals/monkey.png',
-        'assets/images/animals/parrot.png'
-      ],
-      'answer': 1,
-    },
-    {
-      'word': 'Elephant',
-      'options': [
-        'assets/images/animals/tiger.png',
-        'assets/images/animals/fox.png',
-        'assets/images/animals/elephant.png',
-        'assets/images/animals/squirrel.png'
-      ],
-      'answer': 2,
-    },
-    {
-      'word': 'Giraffe',
-      'options': [
-        'assets/images/animals/lion.png',
-        'assets/images/animals/giraffe.png',
-        'assets/images/animals/monkey.png',
-        'assets/images/animals/duck.png'
-      ],
-      'answer': 1,
-    },
-    // --- THÊM CÂU MỚI ---
-    {
-      'word': 'Hippo',
-      'options': [
-        'assets/images/animals/hippopotamus.png',
-        'assets/images/animals/rhinoceros.png',
-        'assets/images/animals/buffalo.png',
-        'assets/images/animals/ox.png'
-      ],
-      'answer': 0,
-    },
-    {
-      'word': 'Zebra',
-      'options': [
-        'assets/images/animals/horse.png',
-        'assets/images/animals/zebra.png',
-        'assets/images/animals/donkey.png', // Nếu chưa có ảnh thì dùng tạm ảnh khác hoặc icon
-        'assets/images/animals/deer.png'
-      ],
-      'answer': 1,
-    },
-    {
-      'word': 'Ostrich',
-      'options': [
-        'assets/images/animals/chicken.png',
-        'assets/images/animals/duck.png',
-        'assets/images/animals/ostrich.png',
-        'assets/images/animals/owl.png'
-      ],
-      'answer': 2,
-    },
-  ];
+  final AudioPlayer sfxPlayer = AudioPlayer();
+  late List<JungleListenChooseQuestion> questions;
+  late JungleListenChooseQuestion currentQuestion;
 
   bool completed = false;
   int selected = -1;
@@ -106,7 +26,15 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
   @override
   void initState() {
     super.initState();
+    questions = JungleListenChooseData.getQuestions();
+    currentQuestion = questions[widget.questionIndex % questions.length];
     Future.delayed(const Duration(milliseconds: 500), playSound);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    currentQuestion = questions[widget.questionIndex % questions.length];
   }
 
   @override
@@ -116,10 +44,10 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
   }
 
   void playSound() async {
-    final q = questions[widget.questionIndex % questions.length];
-    await flutterTts.setLanguage("en-US");
+    final languageCode = context.locale.languageCode;
+    await flutterTts.setLanguage(languageCode == 'ja' ? 'ja-JP' : 'en-US');
     await flutterTts.setPitch(1.0);
-    await flutterTts.speak("${q['word']}!");
+    await flutterTts.speak(currentQuestion.getTranslation(languageCode));
   }
 
   void _playSFX(bool isWin) async {
@@ -130,13 +58,15 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
 
   @override
   Widget build(BuildContext context) {
-    final q = questions[widget.questionIndex % questions.length];
     return Center(
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Listen & Find', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+            Text(
+              'listen_and_find'.tr(),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
+            ),
             const SizedBox(height: 10),
             const Text('Tap the speaker, then pick the animal!', style: TextStyle(fontSize: 16, color: Colors.black54)),
 
@@ -168,9 +98,9 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
                   mainAxisSpacing: 16,
                   childAspectRatio: 1.1,
                 ),
-                itemCount: q['options'].length,
+                itemCount: currentQuestion.imagePaths.length,
                 itemBuilder: (context, i) {
-                  bool isCorrect = (i == q['answer']);
+                  bool isCorrect = (i == currentQuestion.answerIndex);
                   bool isSelected = (selected == i);
                   Color borderColor = Colors.transparent;
                   if (isSelected) {
@@ -204,7 +134,7 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
                       ),
                       padding: const EdgeInsets.all(12),
                       child: Image.asset(
-                        q['options'][i],
+                        currentQuestion.imagePaths[i],
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
                           return Icon(Icons.pets, size: 50, color: Colors.brown.shade300);
@@ -234,7 +164,10 @@ class _JungleListenChooseState extends State<JungleListenChoose> {
                         ),
                         onPressed: widget.onCompleted,
                         icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
-                        label: const Text("Next Level", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                        label: Text(
+                          'next'.tr(),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                       ),
                     );
                   },

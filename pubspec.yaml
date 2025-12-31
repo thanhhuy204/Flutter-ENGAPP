@@ -23,6 +23,7 @@ dependencies:
   flutter_riverpod: 2.6.1
   easy_localization: 3.0.7+1
   flutter_tts: ^4.2.3
+  flutter_gen: ^5.12.0
 
 
 dev_dependencies:
