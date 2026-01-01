@@ -75,15 +75,38 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    // Fixed map size - HOÀN TOÀN CỐ ĐỊNH, không thay đổi theo màn hình
+    final mapWidth = 450.0;
+    final mapHeight = mapWidth / 0.65;
+    
     return Scaffold(
-      body: Container(
-        color: Colors.blue[50],
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: AspectRatio(
-              aspectRatio: 0.65,
+      body: Stack(
+        children: [
+          // Background with blur effect on sides
+          Container(
+            color: Colors.blue[50],
+            child: Center(
+              child: Container(
+                width: mapWidth,
+                height: mapHeight,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade200.withOpacity(0.5),
+                      blurRadius: 50,
+                      spreadRadius: 30,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          // Main map - fixed size
+          Center(
+            child: SizedBox(
+              width: mapWidth,
+              height: mapHeight,
               child: Stack(
                 children: [
                   Positioned.fill(
@@ -101,8 +124,8 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
                     final pos = levelPositions[index];
                     bool isLocked = index > currentLevel;
                     return Positioned(
-                      left: size.width * pos.dx - (isLocked ? 40 : 60),
-                      top: size.height * pos.dy - (isLocked ? 40 : 60),
+                      left: mapWidth * pos.dx - (isLocked ? 40 : 60),
+                      top: mapHeight * pos.dy - (isLocked ? 40 : 60),
                       child: GestureDetector(
                         onTap: isLocked ? null : () {
                           if (index == currentLevel) {
@@ -154,8 +177,8 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
                   AnimatedPositioned(
                     duration: const Duration(seconds: 2), // Tăng thời gian lên 2s cho mượt
                     curve: Curves.easeInOutCubic, // Dùng curve này cho chuyển động tự nhiên hơn
-                    left: size.width * levelPositions[currentLevel].dx - 40,
-                    top: size.height * levelPositions[currentLevel].dy - 70,
+                    left: mapWidth * levelPositions[currentLevel].dx - 40,
+                    top: mapHeight * levelPositions[currentLevel].dy - 70,
                     child: IgnorePointer(
                       child: SizedBox(
                         width: 80,
@@ -187,7 +210,7 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

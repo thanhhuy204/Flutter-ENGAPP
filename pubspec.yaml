@@ -49,6 +49,8 @@ flutter:
     - assets/images/treasures/
     - assets/images/feedings/
     - assets/images/spaces/
+    - assets/images/banner/
+    - assets/images/logos/
     - assets/translations/
     - assets/audio/
     
