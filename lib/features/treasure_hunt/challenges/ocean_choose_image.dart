@@ -87,16 +87,17 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
 
+              // Grid 2x2 with smaller images
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.9,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.0, // Square cards
                 ),
                 itemCount: currentQuestion.options.length,
                 itemBuilder: (context, i) {
@@ -140,33 +141,45 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: borderColor.withOpacity(borderColor == Colors.transparent ? 0 : 1), width: 4),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: borderColor.withOpacity(borderColor == Colors.transparent ? 0 : 1),
+                          width: 3,
+                        ),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.1), offset: Offset(0, 4), blurRadius: 6)
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            offset: Offset(0, 3),
+                            blurRadius: 5,
+                          )
                         ],
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
-                            child: Image.asset(
-                              currentQuestion.options[i].imagePath,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(Icons.water_drop, size: 50, color: Colors.blue.shade300);
-                              },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                currentQuestion.options[i].imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(Icons.water_drop, size: 40, color: Colors.blue.shade300);
+                                },
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 6),
                           Text(
                             currentQuestion.options[i].getLabel(languageCode),
                             textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Colors.blueGrey,
                             ),
@@ -180,27 +193,30 @@ class _OceanChooseImageState extends State<OceanChooseImage> {
 
               if (isCompleted)
                 Padding(
-                  padding: const EdgeInsets.only(top: 40.0, bottom: 20),
+                  padding: const EdgeInsets.only(top: 30.0, bottom: 15),
                   child: Column(
                     children: [
-                      const Icon(Icons.emoji_events, color: Colors.amber, size: 70),
-                      const SizedBox(height: 10),
-                      const Text("Amazing!", style: TextStyle(fontSize: 28, color: Colors.green, fontWeight: FontWeight.bold)),
-
-                      const SizedBox(height: 25),
-
+                      const Text(
+                        "🎉 Correct! 🎉",
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                           elevation: 8,
                         ),
                         onPressed: widget.onCompleted,
-                        icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 28),
+                        icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 26),
                         label: Text(
                           'next'.tr(),
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
                     ],

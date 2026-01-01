@@ -1,7 +1,6 @@
 import '../domain/entities/challenge_question.dart';
 
 class IslandQuizData {
-  // Get all questions
   static List<IslandQuizQuestion> getQuestions() {
     return [
       ...getRound1Questions(),
@@ -12,7 +11,6 @@ class IslandQuizData {
     ];
   }
   
-  // Get questions for specific round
   static List<IslandQuizQuestion> getQuestionsForRound(int round) {
     switch (round) {
       case 1:
@@ -30,12 +28,202 @@ class IslandQuizData {
     }
   }
 
-  // ===== ROUND 1: ANIMAL IDENTIFICATION =====
+  // ===== ROUND 1: COLORS =====
   static List<IslandQuizQuestion> getRound1Questions() {
     return [
       IslandQuizQuestion(
         questionTranslations: {
-          'en': 'Which animal is the king of the jungle?',
+          'en': 'What color is the sky?',
+          'ja': '空の色は何色ですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
+          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
+          IslandQuizOption(text: 'Red', imagePath: 'assets/images/colors/Red.png'),
+          IslandQuizOption(text: 'Yellow', imagePath: 'assets/images/colors/Yellow.png'),
+        ],
+        answer: 'Blue',
+        translations: {'en': 'Blue', 'ja': '青'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'What color is grass?',
+          'ja': '草の色は何色ですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
+          IslandQuizOption(text: 'Brown', imagePath: 'assets/images/colors/Brown.png'),
+          IslandQuizOption(text: 'Yellow', imagePath: 'assets/images/colors/Yellow.png'),
+          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/colors/Orange.png'),
+        ],
+        answer: 'Green',
+        translations: {'en': 'Green', 'ja': '緑'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'What color is fire?',
+          'ja': '火の色は何色ですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Red', imagePath: 'assets/images/colors/Red.png'),
+          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
+          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
+          IslandQuizOption(text: 'White', imagePath: 'assets/images/colors/White.png'),
+        ],
+        answer: 'Red',
+        translations: {'en': 'Red', 'ja': '赤'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'What color is the sun?',
+          'ja': '太陽の色は何色ですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Yellow', imagePath: 'assets/images/colors/Yellow.png'),
+          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/colors/Orange.png'),
+          IslandQuizOption(text: 'Red', imagePath: 'assets/images/colors/Red.png'),
+          IslandQuizOption(text: 'White', imagePath: 'assets/images/colors/White.png'),
+        ],
+        answer: 'Yellow',
+        translations: {'en': 'Yellow', 'ja': '黄色'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'What color is snow?',
+          'ja': '雪の色は何色ですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'White', imagePath: 'assets/images/colors/White.png'),
+          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
+          IslandQuizOption(text: 'Gray', imagePath: 'assets/images/colors/Gray.png'),
+          IslandQuizOption(text: 'Silver', imagePath: 'assets/images/colors/Silver.png'),
+        ],
+        answer: 'White',
+        translations: {'en': 'White', 'ja': '白'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'What color is night?',
+          'ja': '夜の色は何色ですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Black', imagePath: 'assets/images/colors/Black.png'),
+          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
+          IslandQuizOption(text: 'Purple', imagePath: 'assets/images/colors/Purple.png'),
+          IslandQuizOption(text: 'Gray', imagePath: 'assets/images/colors/Gray.png'),
+        ],
+        answer: 'Black',
+        translations: {'en': 'Black', 'ja': '黒'},
+      ),
+    ];
+  }
+
+  // ===== ROUND 2: FRUITS =====
+  static List<IslandQuizQuestion> getRound2Questions() {
+    return [
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which fruit is yellow and curved?',
+          'ja': '黄色くて曲がった果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Banana', imagePath: 'assets/images/fruits/banana.png'),
+          IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
+          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
+          IslandQuizOption(text: 'Pineapple', imagePath: 'assets/images/fruits/pineapple.png'),
+        ],
+        answer: 'Banana',
+        translations: {'en': 'Banana', 'ja': 'バナナ'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which fruit is red with seeds outside?',
+          'ja': '赤くて外に種がある果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Strawberry', imagePath: 'assets/images/fruits/strawberry.png'),
+          IslandQuizOption(text: 'Cherry', imagePath: 'assets/images/fruits/cherry.png'),
+          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
+          IslandQuizOption(text: 'Watermelon', imagePath: 'assets/images/fruits/watermelon.png'),
+        ],
+        answer: 'Strawberry',
+        translations: {'en': 'Strawberry', 'ja': 'イチゴ'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which fruit is orange and round?',
+          'ja': 'オレンジ色で丸い果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/fruits/orange.png'),
+          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
+          IslandQuizOption(text: 'Peach', imagePath: 'assets/images/fruits/peach.png'),
+          IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
+        ],
+        answer: 'Orange',
+        translations: {'en': 'Orange', 'ja': 'オレンジ'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which fruit is big, green outside, red inside?',
+          'ja': '大きくて外が緑、中が赤い果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Watermelon', imagePath: 'assets/images/fruits/watermelon.png'),
+          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
+          IslandQuizOption(text: 'Guava', imagePath: 'assets/images/fruits/guava.png'),
+          IslandQuizOption(text: 'Avocado', imagePath: 'assets/images/fruits/avocado.png'),
+        ],
+        answer: 'Watermelon',
+        translations: {'en': 'Watermelon', 'ja': 'スイカ'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which fruit has a crown on top?',
+          'ja': '上に王冠がある果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Pineapple', imagePath: 'assets/images/fruits/pineapple.png'),
+          IslandQuizOption(text: 'Strawberry', imagePath: 'assets/images/fruits/strawberry.png'),
+          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
+          IslandQuizOption(text: 'Papaya', imagePath: 'assets/images/fruits/papaya.png'),
+        ],
+        answer: 'Pineapple',
+        translations: {'en': 'Pineapple', 'ja': 'パイナップル'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which fruit is sour and yellow?',
+          'ja': '酸っぱくて黄色い果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
+          IslandQuizOption(text: 'Banana', imagePath: 'assets/images/fruits/banana.png'),
+          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
+          IslandQuizOption(text: 'Peach', imagePath: 'assets/images/fruits/peach.png'),
+        ],
+        answer: 'Lemon',
+        translations: {'en': 'Lemon', 'ja': 'レモン'},
+      ),
+    ];
+  }
+
+  // ===== ROUND 3: ANIMALS =====
+  static List<IslandQuizQuestion> getRound3Questions() {
+    return [
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which animal is the king of jungle?',
           'ja': 'ジャングルの王はどの動物ですか？',
         },
         options: [
@@ -47,7 +235,7 @@ class IslandQuizData {
         answer: 'Lion',
         translations: {'en': 'Lion', 'ja': 'ライオン'},
       ),
-      
+
       IslandQuizQuestion(
         questionTranslations: {
           'en': 'Which animal has a long neck?',
@@ -125,199 +313,42 @@ class IslandQuizData {
     ];
   }
 
-  // ===== ROUND 2: COLORS =====
-  static List<IslandQuizQuestion> getRound2Questions() {
+  // ===== ROUND 4: MIXED (Color + Fruit + Animal rotation) =====
+  static List<IslandQuizQuestion> getRound4Questions() {
     return [
+      // Color
       IslandQuizQuestion(
         questionTranslations: {
-          'en': 'What color is the sky on a sunny day?',
-          'ja': '晴れた日の空の色は何色ですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
-          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
-          IslandQuizOption(text: 'Red', imagePath: 'assets/images/colors/Red.png'),
-          IslandQuizOption(text: 'Yellow', imagePath: 'assets/images/colors/Yellow.png'),
-        ],
-        answer: 'Blue',
-        translations: {'en': 'Blue', 'ja': '青'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'What color is grass?',
-          'ja': '草の色は何色ですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
-          IslandQuizOption(text: 'Brown', imagePath: 'assets/images/colors/Brown.png'),
-          IslandQuizOption(text: 'Yellow', imagePath: 'assets/images/colors/Yellow.png'),
-          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/colors/Orange.png'),
-        ],
-        answer: 'Green',
-        translations: {'en': 'Green', 'ja': '緑'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'What color is fire?',
-          'ja': '火の色は何色ですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Red', imagePath: 'assets/images/colors/Red.png'),
-          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
-          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
-          IslandQuizOption(text: 'White', imagePath: 'assets/images/colors/White.png'),
-        ],
-        answer: 'Red',
-        translations: {'en': 'Red', 'ja': '赤'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'What color is the sun?',
-          'ja': '太陽の色は何色ですか？',
+          'en': 'What color is a ripe mango?',
+          'ja': '熟したマンゴーの色は何色ですか？',
         },
         options: [
           IslandQuizOption(text: 'Yellow', imagePath: 'assets/images/colors/Yellow.png'),
-          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/colors/Orange.png'),
+          IslandQuizOption(text: 'Green', imagePath: 'assets/images/colors/Green.png'),
           IslandQuizOption(text: 'Red', imagePath: 'assets/images/colors/Red.png'),
-          IslandQuizOption(text: 'White', imagePath: 'assets/images/colors/White.png'),
+          IslandQuizOption(text: 'Purple', imagePath: 'assets/images/colors/Purple.png'),
         ],
         answer: 'Yellow',
         translations: {'en': 'Yellow', 'ja': '黄色'},
       ),
-
+      
+      // Fruit
       IslandQuizQuestion(
         questionTranslations: {
-          'en': 'What color is snow?',
-          'ja': '雪の色は何色ですか？',
+          'en': 'Which fruit has many small seeds inside?',
+          'ja': '中に小さな種がたくさんある果物はどれですか？',
         },
         options: [
-          IslandQuizOption(text: 'White', imagePath: 'assets/images/colors/White.png'),
-          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
-          IslandQuizOption(text: 'Gray', imagePath: 'assets/images/colors/Gray.png'),
-          IslandQuizOption(text: 'Silver', imagePath: 'assets/images/colors/Silver.png'),
-        ],
-        answer: 'White',
-        translations: {'en': 'White', 'ja': '白'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'What color is the night?',
-          'ja': '夜の色は何色ですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Black', imagePath: 'assets/images/colors/Black.png'),
-          IslandQuizOption(text: 'Blue', imagePath: 'assets/images/colors/Blue.png'),
-          IslandQuizOption(text: 'Purple', imagePath: 'assets/images/colors/Purple.png'),
-          IslandQuizOption(text: 'Gray', imagePath: 'assets/images/colors/Gray.png'),
-        ],
-        answer: 'Black',
-        translations: {'en': 'Black', 'ja': '黒'},
-      ),
-    ];
-  }
-
-  // ===== ROUND 3: FRUITS =====
-  static List<IslandQuizQuestion> getRound3Questions() {
-    return [
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit is yellow and curved?',
-          'ja': '黄色くて曲がった果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Banana', imagePath: 'assets/images/fruits/banana.png'),
-          IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
-          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
-          IslandQuizOption(text: 'Pineapple', imagePath: 'assets/images/fruits/pineapple.png'),
-        ],
-        answer: 'Banana',
-        translations: {'en': 'Banana', 'ja': 'バナナ'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit is red and has seeds on the outside?',
-          'ja': '赤くて外に種がある果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Strawberry', imagePath: 'assets/images/fruits/strawberry.png'),
-          IslandQuizOption(text: 'Cherry', imagePath: 'assets/images/fruits/cherry.png'),
-          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
-          IslandQuizOption(text: 'Watermelon', imagePath: 'assets/images/fruits/watermelon.png'),
-        ],
-        answer: 'Strawberry',
-        translations: {'en': 'Strawberry', 'ja': 'イチゴ'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit is orange and round?',
-          'ja': 'オレンジ色で丸い果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/fruits/orange.png'),
+          IslandQuizOption(text: 'Grapes', imagePath: 'assets/images/fruits/grapes.png'),
           IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
           IslandQuizOption(text: 'Peach', imagePath: 'assets/images/fruits/peach.png'),
           IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
         ],
-        answer: 'Orange',
-        translations: {'en': 'Orange', 'ja': 'オレンジ'},
+        answer: 'Grapes',
+        translations: {'en': 'Grapes', 'ja': 'ブドウ'},
       ),
 
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit is big, green outside and red inside?',
-          'ja': '大きくて外が緑、中が赤い果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Watermelon', imagePath: 'assets/images/fruits/watermelon.png'),
-          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
-          IslandQuizOption(text: 'Guava', imagePath: 'assets/images/fruits/guava.png'),
-          IslandQuizOption(text: 'Avocado', imagePath: 'assets/images/fruits/avocado.png'),
-        ],
-        answer: 'Watermelon',
-        translations: {'en': 'Watermelon', 'ja': 'スイカ'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit has a crown on top?',
-          'ja': '上に王冠がある果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Pineapple', imagePath: 'assets/images/fruits/pineapple.png'),
-          IslandQuizOption(text: 'Strawberry', imagePath: 'assets/images/fruits/strawberry.png'),
-          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
-          IslandQuizOption(text: 'Papaya', imagePath: 'assets/images/fruits/papaya.png'),
-        ],
-        answer: 'Pineapple',
-        translations: {'en': 'Pineapple', 'ja': 'パイナップル'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit is sour and yellow?',
-          'ja': '酸っぱくて黄色い果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
-          IslandQuizOption(text: 'Banana', imagePath: 'assets/images/fruits/banana.png'),
-          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
-          IslandQuizOption(text: 'Peach', imagePath: 'assets/images/fruits/peach.png'),
-        ],
-        answer: 'Lemon',
-        translations: {'en': 'Lemon', 'ja': 'レモン'},
-      ),
-    ];
-  }
-
-  // ===== ROUND 4: MIXED ANIMALS & NATURE =====
-  static List<IslandQuizQuestion> getRound4Questions() {
-    return [
+      // Animal
       IslandQuizQuestion(
         questionTranslations: {
           'en': 'Which animal has 8 legs?',
@@ -332,25 +363,10 @@ class IslandQuizData {
         answer: 'Octopus',
         translations: {'en': 'Octopus', 'ja': 'タコ'},
       ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which fruit is hairy outside?',
-          'ja': '外が毛深い果物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Coconut', imagePath: 'assets/images/fruits/coconut.png'),
-          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
-          IslandQuizOption(text: 'Papaya', imagePath: 'assets/images/fruits/papaya.png'),
-          IslandQuizOption(text: 'Pineapple', imagePath: 'assets/images/fruits/pineapple.png'),
-        ],
-        answer: 'Coconut',
-        translations: {'en': 'Coconut', 'ja': 'ココナッツ'},
-      ),
     ];
   }
 
-  // ===== ROUND 5: FINAL BOSS - HARDEST QUESTIONS =====
+  // ===== ROUND 5: HARD (Animals + Fruits only, difficult questions) =====
   static List<IslandQuizQuestion> getRound5Questions() {
     return [
       IslandQuizQuestion(
@@ -370,7 +386,22 @@ class IslandQuizData {
 
       IslandQuizQuestion(
         questionTranslations: {
-          'en': 'Which animal has the longest nose?',
+          'en': 'Which fruit is the king of fruits?',
+          'ja': 'フルーツの王様はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Mango', imagePath: 'assets/images/fruits/mango.png'),
+          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
+          IslandQuizOption(text: 'Orange', imagePath: 'assets/images/fruits/orange.png'),
+          IslandQuizOption(text: 'Banana', imagePath: 'assets/images/fruits/banana.png'),
+        ],
+        answer: 'Mango',
+        translations: {'en': 'Mango', 'ja': 'マンゴー'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which animal has longest nose?',
           'ja': '一番長い鼻を持つ動物はどれですか？',
         },
         options: [
@@ -385,8 +416,23 @@ class IslandQuizData {
 
       IslandQuizQuestion(
         questionTranslations: {
-          'en': 'Which animal has spots on its body?',
-          'ja': '体に斑点がある動物はどれですか？',
+          'en': 'Which fruit smells very strong?',
+          'ja': 'とても強い匂いがする果物はどれですか？',
+        },
+        options: [
+          IslandQuizOption(text: 'Papaya', imagePath: 'assets/images/fruits/papaya.png'),
+          IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
+          IslandQuizOption(text: 'Grape', imagePath: 'assets/images/fruits/grapes.png'),
+          IslandQuizOption(text: 'Cherry', imagePath: 'assets/images/fruits/cherry.png'),
+        ],
+        answer: 'Papaya',
+        translations: {'en': 'Papaya', 'ja': 'パパイヤ'},
+      ),
+
+      IslandQuizQuestion(
+        questionTranslations: {
+          'en': 'Which animal has spots?',
+          'ja': '斑点がある動物はどれですか？',
         },
         options: [
           IslandQuizOption(text: 'Leopard', imagePath: 'assets/images/animals/leopard.png'),
@@ -400,22 +446,7 @@ class IslandQuizData {
 
       IslandQuizQuestion(
         questionTranslations: {
-          'en': 'Which animal lives in the desert?',
-          'ja': '砂漠に住む動物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Camel', imagePath: 'assets/images/animals/camel.png'),
-          IslandQuizOption(text: 'Horse', imagePath: 'assets/images/animals/horse.png'),
-          IslandQuizOption(text: 'Cow', imagePath: 'assets/images/animals/ox.png'),
-          IslandQuizOption(text: 'Goat', imagePath: 'assets/images/animals/goat.png'),
-        ],
-        answer: 'Camel',
-        translations: {'en': 'Camel', 'ja': 'ラクダ'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which bird cannot fly but can swim?',
+          'en': 'Which bird cannot fly but swims?',
           'ja': '飛べないが泳げる鳥はどれですか？',
         },
         options: [
@@ -426,21 +457,6 @@ class IslandQuizData {
         ],
         answer: 'Penguin',
         translations: {'en': 'Penguin', 'ja': 'ペンギン'},
-      ),
-
-      IslandQuizQuestion(
-        questionTranslations: {
-          'en': 'Which animal jumps the highest?',
-          'ja': '一番高くジャンプする動物はどれですか？',
-        },
-        options: [
-          IslandQuizOption(text: 'Kangaroo', imagePath: 'assets/images/animals/kangaroo.png'),
-          IslandQuizOption(text: 'Deer', imagePath: 'assets/images/animals/deer.png'),
-          IslandQuizOption(text: 'Horse', imagePath: 'assets/images/animals/horse.png'),
-          IslandQuizOption(text: 'Goat', imagePath: 'assets/images/animals/goat.png'),
-        ],
-        answer: 'Kangaroo',
-        translations: {'en': 'Kangaroo', 'ja': 'カンガルー'},
       ),
 
       IslandQuizQuestion(
