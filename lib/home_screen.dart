@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         _currentBannerIndex = 0;
       }
-      
+
       if (_bannerController.hasClients) {
         _bannerController.animateToPage(
           _currentBannerIndex,
@@ -69,12 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // Header với Logo và Settings
               _buildHeader(context),
-              
+
               // Banner Carousel
               _buildBannerCarousel(),
-              
+
               const SizedBox(height: 24),
-              
+
               // Main Content
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -101,9 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(builder: (_) => const TreasureHuntScreen()),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Space Adventure Card
                     _buildMainGameCard(
                       context,
@@ -112,9 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.indigo,
                       onTap: () => Navigator.pushNamed(context, '/space'),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Learning Zone Section
                     Text(
                       'learning_zone'.tr(),
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Row 1: Greedy Boy + Vocabulary
                     Row(
                       children: [
@@ -156,9 +156,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 15),
-                    
+
                     // Row 2: Spelling (centered)
                     Row(
                       children: [
@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(child: SizedBox()), // Empty space for balance
                       ],
                     ),
-                    
+
                     const SizedBox(height: 30),
                   ],
                 ),
@@ -232,9 +232,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Title
           Expanded(
             child: Column(
@@ -258,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          
+
           // Settings Button
           Container(
             decoration: BoxDecoration(
@@ -384,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 130,
+        height: 150,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
@@ -405,15 +405,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Image.asset(
                     'assets/images/treasures/treasure_banner.png',
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [color, color.withOpacity(0.7)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                    ),
+                  ),
+                )
+
+              /// Space Adventure background ✅
+              else if (title == 'space_adventure'.tr())
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/banner/banner2.png',
+                    fit: BoxFit.cover,
                   ),
                 )
               else
@@ -429,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              
+
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
