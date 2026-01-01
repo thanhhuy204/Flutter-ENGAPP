@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_kids_matching_game/core/theme/app_theme.dart';
 
-// Import các màn hình game mới
+// Import các màn hình game
 import 'package:flutter_kids_matching_game/features/vocabulary/presentation/screens/vocab_list_screen.dart';
 import 'package:flutter_kids_matching_game/features/spelling/presentation/screens/spelling_screen.dart';
+import 'package:flutter_kids_matching_game/features/feeding/presentation/screens/feeding_screen.dart'; // MÀN HÌNH MỚI
 import 'features/treasure_hunt/presentation/screens/treasure_hunt_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -14,7 +16,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('master_games').tr(), // Đã dùng khóa dịch
+        title: const Text('master_games').tr(),
         centerTitle: true,
         backgroundColor: AppTheme.primaryColor,
         elevation: 0,
@@ -38,7 +40,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // --- GAME CHÍNH: TREASURE HUNT ---
               _buildMainGameCard(
                 context,
                 title: 'treasure_hunt'.tr(),
@@ -48,19 +49,28 @@ class HomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
+
+              _buildMainGameCard(
+                context,
+                title: 'space_adventure'.tr(), // Cần thêm key này vào file JSON
+                icon: Icons.rocket_launch_rounded,
+                color: Colors.indigo, // Màu xanh tím vũ trụ
+                onTap: () => Navigator.pushNamed(context, '/space'),
+              ),
+
+              const SizedBox(height: 20),
               Text('learning_zone'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54)),
               const SizedBox(height: 10),
 
-              // --- KHU VỰC HỌC TẬP ---
               Row(
                 children: [
                   Expanded(
                     child: _buildMiniGameCard(
                       context,
-                      title: 'vocabulary'.tr(),
-                      icon: Icons.menu_book_rounded,
-                      color: Colors.purple,
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VocabListScreen())),
+                      title: 'Greedy Boy (feeding)'.tr(), // Cập nhật key dịch: Bạn nhỏ tham ăn
+                      icon: Icons.fastfood_rounded,
+                      color: Colors.green,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedingScreen())),
                     ),
                   ),
                   const SizedBox(width: 15),
@@ -74,6 +84,14 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 15),
+              _buildMiniGameCard(
+                context,
+                title: 'vocabulary'.tr(),
+                icon: Icons.menu_book_rounded,
+                color: Colors.purple,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VocabListScreen())),
               ),
             ],
           ),
@@ -132,7 +150,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             CircleAvatar(radius: 25, backgroundColor: color.withOpacity(0.1), child: Icon(icon, color: color, size: 30)),
             const SizedBox(height: 10),
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
       ),

@@ -9,10 +9,13 @@ import 'package:flutter_kids_matching_game/features/vocabulary/presentation/scre
 import 'package:flutter_kids_matching_game/home_screen.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/screens/settings_screen.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
+import 'package:flutter_kids_matching_game/features/feeding/presentation/screens/feeding_screen.dart';
 
 // Import Core
 import 'package:flutter_kids_matching_game/core/theme/app_theme.dart';
 import 'package:flutter_kids_matching_game/core/services/storage_service.dart';
+
+import 'features/space/presentation/screens/space_map_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,6 +57,8 @@ class MyApp extends ConsumerWidget {
           '/setting': (context) => const SettingScreen(),
           '/vocabulary': (context) => const VocabListScreen(),
           '/spelling': (context) => const SpellingScreen(),
+          '/feeding': (context) => const FeedingScreen(),
+          '/space': (context) => const SpaceMapScreen(),
         },
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

@@ -94,5 +94,16 @@
     "nectarine": "Nectarine",
     "passion_fruit": "Passion Fruit",
     "peach_fruit": "Peach",
-    "pomegranate": "Pomegranate"
+    "pomegranate": "Pomegranate",
+
+    "Greedy Boy (feeding)": "Feeding Game",
+    "hungry_boy_title": "Hungry Boy",
+    "im_hungry_prefix": "I'm hungry! I want ",
+    "listen_again": "Listen again",
+
+    "space_adventure": "Space Adventure",
+    "mission_complete": "MISSION COMPLETE!",
+    "featured": "Featured",
+    "check_answer": "Check Answer"
+
 }

@@ -47,6 +47,8 @@ flutter:
     - assets/images/animals/
     - assets/images/fruits/
     - assets/images/treasures/
+    - assets/images/feedings/
+    - assets/images/spaces/
     - assets/translations/
     - assets/audio/
     

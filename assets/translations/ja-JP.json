@@ -93,5 +93,14 @@
   "nectarine": "ネクタリン",
   "passion_fruit": "パッションフルーツ",
   "peach_fruit": "モモ",
-  "pomegranate": "ザクロ"
+  "pomegranate": "ザクロ",
+
+  "Greedy Boy (feeding)": "もぐもぐゲーム",
+  "hungry_boy_title": "お腹ぺこぺこくん",
+  "im_hungry_prefix": "お腹が空いた！ ",
+  "listen_again": "もう一度聞く",
+
+  "space_adventure": "宇宙の大冒険",
+  "check_answer": "答え合わせ",
+  "mission_complete": "ミッション完了！"
 }
