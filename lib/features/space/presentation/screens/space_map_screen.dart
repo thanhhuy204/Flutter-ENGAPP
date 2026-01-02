@@ -22,7 +22,7 @@ class _SpaceMapScreenState extends ConsumerState<SpaceMapScreen> {
     Offset(0.28, 0.53), // Level 3: Earth
     Offset(0.71, 0.37), // Level 4: Mars
     Offset(0.28, 0.23), // Level 5: Jupiter
-    Offset(0.72, 0.06), // Final: Sun
+    Offset(0.70, 0.06), // Final: Sun
   ];
 
   @override

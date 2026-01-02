@@ -339,7 +339,7 @@ class IslandQuizData {
           'ja': '中に小さな種がたくさんある果物はどれですか？',
         },
         options: [
-          IslandQuizOption(text: 'Grapes', imagePath: 'assets/images/fruits/grapes.png'),
+          IslandQuizOption(text: 'Grapes', imagePath: 'assets/images/fruits/grape.png'),
           IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
           IslandQuizOption(text: 'Peach', imagePath: 'assets/images/fruits/peach.png'),
           IslandQuizOption(text: 'Lemon', imagePath: 'assets/images/fruits/lemon.png'),
@@ -422,7 +422,7 @@ class IslandQuizData {
         options: [
           IslandQuizOption(text: 'Papaya', imagePath: 'assets/images/fruits/papaya.png'),
           IslandQuizOption(text: 'Apple', imagePath: 'assets/images/fruits/apple.png'),
-          IslandQuizOption(text: 'Grape', imagePath: 'assets/images/fruits/grapes.png'),
+          IslandQuizOption(text: 'Grape', imagePath: 'assets/images/fruits/grape.png'),
           IslandQuizOption(text: 'Cherry', imagePath: 'assets/images/fruits/cherry.png'),
         ],
         answer: 'Papaya',

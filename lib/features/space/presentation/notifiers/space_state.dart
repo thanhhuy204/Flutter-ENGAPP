@@ -10,4 +10,5 @@ class SpaceState {
       currentPlanetIndex: currentPlanetIndex ?? this.currentPlanetIndex,
     );
   }
+
 }

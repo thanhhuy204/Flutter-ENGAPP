@@ -27,7 +27,7 @@ class GlobalDataSource {
   static final List<GameItem> fruits = [
     const GameItem(id: 'apple', image: 'assets/images/fruits/apple.png', nameEn: 'Apple', nameJa: 'リンゴ'),
     const GameItem(id: 'banana', image: 'assets/images/fruits/banana.png', nameEn: 'Banana', nameJa: 'バナナ'),
-    const GameItem(id: 'grape', image: 'assets/images/fruits/grapes.png', nameEn: 'Grape', nameJa: 'ブドウ'),
+    const GameItem(id: 'grape', image: 'assets/images/fruits/grape.png', nameEn: 'Grape', nameJa: 'ブドウ'),
     const GameItem(id: 'orange', image: 'assets/images/fruits/orange.png', nameEn: 'Orange', nameJa: 'オレンジ'),
     const GameItem(id: 'lemon', image: 'assets/images/fruits/lemon.png', nameEn: 'Lemon', nameJa: 'レモン'),
     const GameItem(id: 'cherry', image: 'assets/images/fruits/cherry.png', nameEn: 'Cherry', nameJa: 'サクランボ'),

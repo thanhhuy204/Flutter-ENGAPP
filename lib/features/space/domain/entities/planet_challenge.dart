@@ -1,3 +1,5 @@
+import 'dart:math';
+
 enum SpaceSkill {
   listening,
   missingLetter,
@@ -13,7 +15,7 @@ class SpaceQuestion {
   final List<String>? imageOptions;
   final String? correctImage;
 
-  const SpaceQuestion({
+  SpaceQuestion({
     required this.targetWord,
     required this.hint,
     this.answer,
@@ -29,7 +31,7 @@ class SpacePlanet {
   final SpaceSkill skill;
   final List<SpaceQuestion> questions;
 
-  const SpacePlanet({
+  SpacePlanet({
     required this.id,
     required this.name,
     required this.level,
@@ -39,10 +41,138 @@ class SpacePlanet {
 }
 
 class SpaceData {
-  static const List<SpacePlanet> planets = [
+  /// 🧠 TỪ DÙNG CHUNG CHO EN & JA
+  static final List<String> _missingLetterWords = [
+    'apple', 'banana', 'cherry', 'tiger', 'monkey', 'lion', 'zebra', 'grape', 'orange', 'pear', 'watermelon',
+    'leopard', 'kangaroo', 'mouse', 'ox', 'fox', 'octopus', 'penguin', 'turtle', 'wolf', 'mango', 'peach', 'strawberry',
+  ];
+
+  static final List<Map<String, dynamic>> _earthVocabulary = [
+    {'word': 'eagle', 'folder': 'animals'},
+    {'word': 'elephant', 'folder': 'animals'},
+    {'word': 'fish', 'folder': 'animals'},
+    {'word': 'duck', 'folder': 'animals'},
+    {'word': 'crab', 'folder': 'animals'},
+    {'word': 'lion', 'folder': 'animals'},
+    {'word': 'dog', 'folder': 'animals'},
+    {'word': 'fox', 'folder': 'animals'},
+    {'word': 'wolf', 'folder': 'animals'},
+    {'word': 'leopard', 'folder': 'animals'},
+    {'word': 'penguin', 'folder': 'animals'},
+    {'word': 'tiger', 'folder': 'animals'},
+    {'word': 'turtle', 'folder': 'animals'},
+    {'word': 'apple', 'folder': 'fruits'},
+    {'word': 'banana', 'folder': 'fruits'},
+    {'word': 'grape', 'folder': 'fruits'},
+    {'word': 'watermelon', 'folder': 'fruits'},
+    {'word': 'strawberry', 'folder': 'fruits'},
+    {'word': 'mango', 'folder': 'fruits'},
+    {'word': 'orange', 'folder': 'fruits'},
+    {'word': 'lemon', 'folder': 'fruits'},
+    {'word': 'pear', 'folder': 'fruits'},
+    {'word': 'peach', 'folder': 'fruits'},
+    {'word': 'pineapple', 'folder': 'fruits'},
+    {'word': 'red', 'folder': 'colors'},
+    {'word': 'blue', 'folder': 'colors'},
+    {'word': 'green', 'folder': 'colors'},
+    {'word': 'yellow', 'folder': 'colors'},
+    {'word': 'white', 'folder': 'colors'},
+    {'word': 'silver', 'folder': 'colors'},
+    {'word': 'pink', 'folder': 'colors'},
+  ];
+
+  // 🧩 DỮ LIỆU CÂU ĐỐ CHO LEVEL 4 (MARS)
+  static final List<Map<String, String>> _scramblePool = [
+    {'word': 'FOX', 'hint': 'I have a bushy tail and live in the wild.'},
+    {'word': 'DOG', 'hint': 'I am man\'s best friend and I bark.'},
+    {'word': 'CAT', 'hint': 'I like to catch mice and say "Meow".'},
+    {'word': 'LION', 'hint': 'I am the king of the jungle.'},
+    {'word': 'FISH', 'hint': 'I live underwater and have fins.'},
+    {'word': 'BIRD', 'hint': 'I have wings and can fly high.'},
+    {'word': 'APPLE', 'hint': 'I am a crunchy fruit, often red or green.'},
+    {'word': 'DUCK', 'hint': 'I say "Quack" and love to swim.'},
+    {'word': 'CRAB', 'hint': 'I walk sideways on the beach.'},
+    {'word': 'GRAPE', 'hint': 'I am a small, round fruit used to make wine.'},
+    {'word': 'LEMON', 'hint': 'I am a yellow fruit and very sour.'},
+  ];
+
+  static Map<String, String> get _wordFolderMap {
+    final Map<String, String> map = {};
+
+    // Đưa tất cả từ trong _earthVocabulary vào map
+    for (var item in _earthVocabulary) {
+      map[item['word']] = item['folder'];
+    }
+
+    // Thêm các từ từ các level khác nếu cần (ví dụ level 1 mặc định là animals)
+    // map['parrot'] = 'animals';
+
+    return map;
+  }
+
+  // 🆕 Hàm lấy đường dẫn ảnh hoàn chỉnh
+  static String getImagePath(String word) {
+    // Nếu từ có trong map thì lấy folder tương ứng, không thì mặc định là 'animals'
+    final folder = _wordFolderMap[word] ?? 'animals';
+    return 'assets/images/$folder/$word.png';
+  }
+
+  /// 🎲 RANDOM 5 CÂU
+  static List<SpaceQuestion> _buildLevel2Questions() {
+    final rand = Random();
+    final words = [..._missingLetterWords]..shuffle();
+
+    return words.take(5).map((word) {
+      final index = rand.nextInt(word.length);
+      final missingChar = word[index];
+
+      return SpaceQuestion(
+        targetWord: word,
+        hint: word, // key localization
+        answer: missingChar,
+      );
+    }).toList();
+  }
+
+  static List<SpaceQuestion> _buildLevel3Questions() {
+    final rand = Random();
+    final items = [..._earthVocabulary]..shuffle();
+
+    return items.take(7).map((item) {
+      final word = item['word'] as String;
+      final folder = item['folder'] as String;
+
+      // Tạo list options: 1 đúng + 3 sai
+      final options = <String>{word};
+      while (options.length < 4) {
+        options.add(_earthVocabulary[rand.nextInt(_earthVocabulary.length)]['word']);
+      }
+
+      final shuffledOptions = options.toList()..shuffle();
+
+      return SpaceQuestion(
+        targetWord: word,
+        hint: folder, // Dùng hint để chứa tên folder ảnh
+        correctImage: word,
+        imageOptions: shuffledOptions,
+      );
+    }).toList();
+  }
+
+  static List<SpaceQuestion> _buildLevel4Questions() {
+    final pool = [..._scramblePool]..shuffle();
+    return pool.take(8).map((item) {
+      return SpaceQuestion(
+        targetWord: item['word']!,
+        hint: item['hint']!, // Đây là câu đố hiển thị trong ô trắng
+      );
+    }).toList();
+  }
+
+  /// 🌍 PLANETS
+  static final List<SpacePlanet> planets = [
     // =========================
     // LEVEL 1 – MERCURY
-    // Listening + Choose Image
     // =========================
     SpacePlanet(
       id: 'mercury',
@@ -72,7 +202,7 @@ class SpaceData {
     ),
 
     // =========================
-    // LEVEL 2 - VENUS
+    // LEVEL 2 – VENUS ✅ RANDOM
     // Missing Letter
     // =========================
     SpacePlanet(
@@ -80,50 +210,33 @@ class SpaceData {
       name: 'Venus',
       level: 2,
       skill: SpaceSkill.missingLetter,
-      questions: [
-        SpaceQuestion(targetWord: 'APPLE', hint: 'venus_hint_1', answer: 'P'),
-        SpaceQuestion(targetWord: 'LEMON', hint: 'venus_hint_2', answer: 'O'),
-        SpaceQuestion(targetWord: 'GRAPE', hint: 'venus_hint_3', answer: 'A'),
-        SpaceQuestion(targetWord: 'CHERRY', hint: 'venus_hint_4', answer: 'R'),
-      ],
+      questions: _buildLevel2Questions(),
     ),
 
     // =========================
-    // LEVEL 3 - EARTH
-    // Reading
+    // LEVEL 3 – EARTH
     // =========================
     SpacePlanet(
       id: 'earth',
       name: 'Earth',
       level: 3,
       skill: SpaceSkill.reading,
-      questions: [
-        SpaceQuestion(targetWord: 'cat', hint: 'earth_hint_1'),
-        SpaceQuestion(targetWord: 'tree', hint: 'earth_hint_2'),
-        SpaceQuestion(targetWord: 'water', hint: 'earth_hint_3'),
-        SpaceQuestion(targetWord: 'flower', hint: 'earth_hint_4'),
-      ],
+      questions: _buildLevel3Questions(),
     ),
 
-    // =========================
-    // LEVEL 4 - MARS
-    // Scramble
+    // LEVEL 4 – MARS ✅ RANDOM 8 CÂU
+    // Skill: Scramble (Spelling Challenge)
     // =========================
     SpacePlanet(
       id: 'mars',
       name: 'Mars',
       level: 4,
       skill: SpaceSkill.scramble,
-      questions: [
-        SpaceQuestion(targetWord: 'ELEPHANT', hint: 'mars_hint_1'),
-        SpaceQuestion(targetWord: 'TIGER', hint: 'mars_hint_2'),
-        SpaceQuestion(targetWord: 'ZEBRA', hint: 'mars_hint_3'),
-      ],
+      questions: _buildLevel4Questions(),
     ),
 
     // =========================
-    // LEVEL 5 - JUPITER
-    // Listening (tap)
+    // LEVEL 5 – JUPITER
     // =========================
     SpacePlanet(
       id: 'jupiter',
@@ -137,8 +250,7 @@ class SpaceData {
     ),
 
     // =========================
-    // FINAL - SUN
-    // Matching
+    // FINAL – SUN
     // =========================
     SpacePlanet(
       id: 'sun',
