@@ -37,6 +37,10 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
   List<String> shuffledLetters = [];
   final FocusNode _focusNode = FocusNode();
 
+  // Thêm getter để biết đang ở Round mấy
+  bool get isSun => widget.planet.id == 'sun';
+  int get currentRound => (currentQuestionIndex ~/ 5) + 1;
+
   @override
   void initState() {
     super.initState();
@@ -45,42 +49,42 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
 
   void _setupQuestion() {
     final q = widget.planet.questions[currentQuestionIndex];
+    final isSun = widget.planet.id == 'sun';
 
+    // Reset trạng thái
     isCorrect = false;
     showTargetWord = false;
     selectedAnswer = null;
     userLetters = [];
 
-    if (widget.planet.skill == SpaceSkill.missingLetter) {
-      final hideChar = q.answer ?? q.targetWord[1];
-      displayWord = q.targetWord.replaceFirst(hideChar, '_');
+    // --- LOGIC TỰ ĐỘNG NÓI (SUN ROUND 1 HOẶC SKILL LISTENING) ---
+    bool isListeningRound = (widget.planet.skill == SpaceSkill.listening) || (isSun && currentQuestionIndex < 5);
 
-      final correctChar = q.answer!.toUpperCase();
-      final options = <String>{correctChar};
-
-      while (options.length < 4) {
-        options.add(
-          String.fromCharCode(65 + Random().nextInt(26)),
-        );
-      }
-      missingLetterOptions = options.toList()..shuffle();
-    } else {
-      displayWord = q.targetWord;
-    }
-
-    if (widget.planet.skill == SpaceSkill.listening) {
+    if (isListeningRound) {
       Future.microtask(() {
         ref.read(spaceProvider.notifier).speak(q.targetWord, 'en');
       });
     }
-    if (widget.planet.skill == SpaceSkill.scramble) {
-      // Xáo trộn chữ cái
+
+    // --- LOGIC THIẾT LẬP DỮ LIỆU THEO SKILL ---
+    // Round 2 của Sun hoặc Skill Missing Letter
+    if (widget.planet.skill == SpaceSkill.missingLetter || (isSun && currentQuestionIndex >= 5 && currentQuestionIndex < 10)) {
+      final hideChar = q.answer ?? q.targetWord[1];
+      displayWord = q.targetWord.toUpperCase().replaceFirst(hideChar.toUpperCase(), '_');
+
+      final correctChar = (q.answer ?? hideChar).toUpperCase();
+      final options = <String>{correctChar};
+      while (options.length < 4) {
+        options.add(String.fromCharCode(65 + Random().nextInt(26)));
+      }
+      missingLetterOptions = options.toList()..shuffle();
+    }
+    // Round 4 của Sun hoặc Skill Scramble
+    else if (widget.planet.skill == SpaceSkill.scramble || (isSun && currentQuestionIndex >= 15)) {
       shuffledLetters = q.targetWord.toUpperCase().split('')..shuffle();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_focusNode.canRequestFocus) {
-          _focusNode.requestFocus();
-        }
-      });
+      _focusNode.requestFocus();
+    } else {
+      displayWord = q.targetWord;
     }
 
     setState(() {});
@@ -101,14 +105,91 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
     sfxPlayer.play(AssetSource('audio/lose.mp3'), volume: 0.3);
   }
 
+  // Trong class _PlanetChallengeScreenState
+
   void _nextQuestion() {
-    if (currentQuestionIndex < widget.planet.questions.length - 1) {
+    // Kiểm tra xem có phải là câu cuối cùng của một Round ở Level Sun không (câu 5, 10, 15)
+    bool isEndOfRound = isSun && (currentQuestionIndex + 1) % 5 == 0;
+    bool isLastQuestion = currentQuestionIndex == widget.planet.questions.length - 1;
+
+    if (isSun && isEndOfRound) {
+      if (isLastQuestion) {
+        _showFinalVictoryDialog();
+      } else {
+        _showNextRoundDialog();
+      }
+    } else if (currentQuestionIndex < widget.planet.questions.length - 1) {
       currentQuestionIndex++;
       _setupQuestion();
     } else {
+      // Hoàn thành các level bình thường (1-5)
       ref.read(spaceProvider.notifier).completeLevel(widget.planet.level);
       Navigator.pop(context);
     }
+  }
+
+  void _showNextRoundDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.deepOrange.shade900,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("ROUND COMPLETE!",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Text("You passed Round $currentRound! \nGet ready for the next challenge.",
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70)),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              // Đã sửa: ElevatedButton.styleFrom
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent),
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() {
+                  currentQuestionIndex++;
+                  _setupQuestion();
+                });
+              },
+              child: Text("START ROUND ${currentRound + 1}"),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showFinalVictoryDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.orange.shade800,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("☀️ MISSION ACCOMPLISHED! ☀️",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+        content: const Text("You have conquered the Sun and completed the ultimate Battle Mode!",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white)),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              // Đã sửa: ElevatedButton.styleFrom
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.yellowAccent),
+              onPressed: () {
+                ref.read(spaceProvider.notifier).completeLevel(widget.planet.level);
+                Navigator.pop(context); // Đóng Dialog
+                Navigator.pop(context, true); // Thoát khỏi màn hình thử thách và gửi tín hiệu 'true'
+              },
+              child: const Text("COLLECT VICTORY", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -148,24 +229,25 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
   // ================= UI =================
 
   Widget _buildHeader() {
+    int round = (currentQuestionIndex ~/ 5) + 1;
+    String title = isSun ? "🔥 ROUND $round - BOSS BATTLE 🔥" : "${widget.planet.name}";
+
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios,
-                color: Colors.white, size: 18),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
-          Text(
-            "${widget.planet.name} "
-                "(${currentQuestionIndex + 1}/${widget.planet.questions.length})",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              "$title (${currentQuestionIndex + 1}/${widget.planet.questions.length})",
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -219,8 +301,19 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
   // ================= SKILL SWITCH =================
 
   Widget _buildSkillContent(SpaceQuestion q) {
+    final isSun = widget.planet.id == 'sun';
+
+    if (isSun) {
+      if (currentQuestionIndex < 5) return _buildListening(q);      // Round 1
+      if (currentQuestionIndex < 10) return _buildMissingLetter(q); // Round 2
+      if (currentQuestionIndex < 15) return _buildReadingChallenge(q); // Round 3
+      return _buildScrambleChallenge(q);                            // Round 4
+    }
     switch (widget.planet.skill) {
       case SpaceSkill.listening:
+        if (widget.planet.id == 'jupiter') {
+          return _buildDictationChallenge(q);
+        }
         return _buildListening(q);
       case SpaceSkill.missingLetter:
         return _buildMissingLetter(q);
@@ -543,6 +636,118 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
     );
   }
 
+  Widget _buildDictationChallenge(SpaceQuestion q) {
+    final String target = q.targetWord.toUpperCase();
+    final String imagePath = SpaceData.getImagePath(q.correctImage ?? "");
+
+    return KeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent) {
+          final key = event.logicalKey.keyLabel.toUpperCase();
+          if (event.logicalKey == LogicalKeyboardKey.backspace) {
+            if (userLetters.isNotEmpty) setState(() => userLetters.removeLast());
+            return;
+          }
+          if (key.length == 1 && target.contains(key)) _onLetterTap(key, target);
+        }
+      },
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          // 1. Hình ảnh gợi ý (Bị làm mờ bằng hiệu ứng Blur)
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white24, width: 2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: ImageFiltered(
+                    imageFilter: isCorrect
+                        ? ColorFilter.mode(Colors.transparent, BlendMode.multiply)
+                        : ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+                    child: Image.asset(imagePath, fit: BoxFit.contain),
+                  ),
+                ),
+              ),
+              // Nút loa đè lên hình ảnh
+              IconButton(
+                icon: const Icon(Icons.volume_up, size: 80, color: Colors.cyanAccent),
+                onPressed: () => ref.read(spaceProvider.notifier).speak(q.targetWord, 'en'),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 30),
+
+          // 2. Các ô trống hiển thị chữ
+          Wrap(
+            spacing: 8,
+            children: List.generate(target.length, (index) {
+              String char = index < userLetters.length ? userLetters[index] : "";
+              return Container(
+                width: 45,
+                height: 55,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                      color: isCorrect ? Colors.greenAccent : Colors.cyanAccent,
+                      width: 2
+                  ),
+                  color: Colors.black38,
+                ),
+                child: Text(
+                  char,
+                  style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              );
+            }),
+          ),
+
+          const Expanded(child: SizedBox()),
+
+          // 3. Dãy nút bấm chữ cái (Lấy từ shuffledLetters đã tạo ở _setupQuestion)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: shuffledLetters.map((char) {
+                return GestureDetector(
+                  onTap: isCorrect ? null : () => _onLetterTap(char, target),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurpleAccent, // Jupiter thường có màu tím/nâu
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [BoxShadow(color: Colors.black45, offset: Offset(0, 3))],
+                    ),
+                    child: Text(
+                      char,
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
 // Hàm xử lý khi chọn chữ (bấm nút hoặc gõ phím)
   void _onLetterTap(String char, String target) {
     if (userLetters.length < target.length) {
@@ -563,6 +768,7 @@ class _PlanetChallengeScreenState extends ConsumerState<PlanetChallengeScreen> {
       }
     }
   }
+
 }
 
 

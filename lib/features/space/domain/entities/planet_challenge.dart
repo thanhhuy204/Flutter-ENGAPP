@@ -96,6 +96,15 @@ class SpaceData {
     {'word': 'LEMON', 'hint': 'I am a yellow fruit and very sour.'},
   ];
 
+  // 🌩️ DỮ LIỆU CHO LEVEL 5 (JUPITER) - Tập trung vào các từ đã học ở level trước để kiểm tra trí nhớ
+  static final List<String> _jupiterPool = [
+    'TIGER', 'MONKEY', 'ZEBRA', 'ORANGE', 'PINEAPPLE',
+    'BANANA', 'TURTLE', 'PENGUIN', 'LEMON', 'APPLE',
+    'EAGLE', 'SHARK', 'PEAR', 'WATERMELON', 'PEACH',
+    'CRAB', 'STRAWBERRY', 'MOUSE', 'OCTOPUS', 'PARROT', 'PENGUIN',
+    'SHEEP',
+  ];
+
   static Map<String, String> get _wordFolderMap {
     final Map<String, String> map = {};
 
@@ -167,6 +176,65 @@ class SpaceData {
         hint: item['hint']!, // Đây là câu đố hiển thị trong ô trắng
       );
     }).toList();
+  }
+
+  static List<SpaceQuestion> _buildLevel5Questions() {
+    final pool = [..._jupiterPool]..shuffle();
+    return pool.take(8).map((word) {
+      return SpaceQuestion(
+        targetWord: word,
+        hint: 'jupiter_dictation', // Dùng để xác định logic ẩn/hiện
+        correctImage: word.toLowerCase(),
+      );
+    }).toList();
+  }
+
+  static List<SpaceQuestion> _buildLevel6Questions() {
+    final rand = Random();
+    List<SpaceQuestion> questions = [];
+
+    // Round 1: Listening (Câu 0-4)
+    final r1 = [..._missingLetterWords]..shuffle();
+    questions.addAll(r1.take(5).map((w) => SpaceQuestion(
+      targetWord: w,
+      hint: 'SUN_ROUND_1', // Đánh dấu Round 1
+      correctImage: w,
+      imageOptions: _generateOptions(w),
+    )));
+
+    // Round 2: Missing Letter (Câu 5-9)
+    final r2 = [..._missingLetterWords]..shuffle();
+    questions.addAll(r2.take(5).map((w) {
+      final char = w[rand.nextInt(w.length)];
+      return SpaceQuestion(targetWord: w, answer: char, hint: 'SUN_ROUND_2');
+    }));
+
+    // Round 3: Reading (Câu 10-14)
+    final r3 = [..._earthVocabulary]..shuffle();
+    questions.addAll(r3.take(5).map((item) => SpaceQuestion(
+      targetWord: item['word'],
+      hint: 'SUN_ROUND_3',
+      correctImage: item['word'],
+      imageOptions: _generateOptions(item['word']),
+    )));
+
+    // Round 4: Scramble (Câu 15-19)
+    final r4 = [..._scramblePool]..shuffle();
+    questions.addAll(r4.take(5).map((item) => SpaceQuestion(
+      targetWord: item['word']!,
+      hint: item['hint']!, // Hint là câu đố, code sẽ nhận diện qua index
+    )));
+
+    return questions;
+  }
+
+  static List<String> _generateOptions(String correct) {
+    final options = <String>{correct};
+    final allWords = _earthVocabulary.map((e) => e['word'] as String).toList();
+    while (options.length < 4) {
+      options.add(allWords[Random().nextInt(allWords.length)]);
+    }
+    return options.toList()..shuffle();
   }
 
   /// 🌍 PLANETS
@@ -242,11 +310,8 @@ class SpaceData {
       id: 'jupiter',
       name: 'Jupiter',
       level: 5,
-      skill: SpaceSkill.listening,
-      questions: [
-        SpaceQuestion(targetWord: 'banana', hint: 'jupiter_hint_1'),
-        SpaceQuestion(targetWord: 'orange', hint: 'jupiter_hint_2'),
-      ],
+      skill: SpaceSkill.listening, // Tận dụng skill listening nhưng kết hợp bàn phím
+      questions: _buildLevel5Questions(),
     ),
 
     // =========================
@@ -256,11 +321,8 @@ class SpaceData {
       id: 'sun',
       name: 'Sun',
       level: 6,
-      skill: SpaceSkill.matching,
-      questions: [
-        SpaceQuestion(targetWord: 'sun', hint: 'sun_hint_1'),
-        SpaceQuestion(targetWord: 'light', hint: 'sun_hint_2'),
-      ],
+      skill: SpaceSkill.matching, // Skill chính dùng để nhận diện Battle Mode
+      questions: _buildLevel6Questions(),
     ),
   ];
 }

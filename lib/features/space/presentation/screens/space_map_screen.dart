@@ -115,9 +115,19 @@ class _SpaceMapScreenState extends ConsumerState<SpaceMapScreen> {
 
   Widget _buildPlanetNode(BuildContext context, WidgetRef ref, SpacePlanet planet, bool isLocked, int index) {
     return GestureDetector(
-      onTap: isLocked ? null : () {
+      onTap: isLocked ? null : () async {
         ref.read(spaceProvider.notifier).updatePosition(index);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => PlanetChallengeScreen(planet: planet)));
+
+        // Chờ kết quả trả về từ màn hình thử thách
+        final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => PlanetChallengeScreen(planet: planet))
+        );
+
+        // Nếu kết quả là 'true' (vừa thắng Level Sun)
+        if (result == true) {
+          _showGrandFinalDiscoveryDialog(context);
+        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -141,6 +151,52 @@ class _SpaceMapScreenState extends ConsumerState<SpaceMapScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Thêm hàm này vào class _SpaceMapScreenState
+  void _showGrandFinalDiscoveryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.yellowAccent, width: 2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.auto_awesome, color: Colors.yellowAccent, size: 80),
+              const SizedBox(height: 16),
+              const Text(
+                "DISCOVERY COMPLETE!",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                "Congratulations! You have completed all challenges and become a master of the Solar System.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellowAccent,
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
