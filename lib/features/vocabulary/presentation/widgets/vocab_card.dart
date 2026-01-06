@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart'; // Lấy Settings
 import 'package:flutter_kids_matching_game/core/constants/setting_choices.dart'; // This was MISSING in my previous response for VocabNotifier!
-class VocabCard extends ConsumerWidget { // Đổi thành ConsumerWidget
+class VocabCard extends ConsumerWidget {
   final GameItem item;
   final VoidCallback onTap;
   final bool isSelected;

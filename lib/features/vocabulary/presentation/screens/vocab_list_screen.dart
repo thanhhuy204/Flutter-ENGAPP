@@ -69,12 +69,7 @@ class VocabListScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  Text(
-                    // Nếu đang là EN thì hiện sub JA và ngược lại
-                    langCode == 'en' ? state.selectedVocab!.nameJa : state.selectedVocab!.nameEn,
-                    style: const TextStyle(color: Colors.grey, fontSize: 20),
-                  ),
-                  const SizedBox(height: 20),
+
                 ],
               ),
             ),

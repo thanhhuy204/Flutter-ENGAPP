@@ -160,6 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 15),
 
                     // Row 2: Spelling (centered)
+                    // Row 2: Spelling + Listen & Speak (Đã lấp đầy khoảng trống)
                     Row(
                       children: [
                         Expanded(
@@ -175,7 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const SizedBox(width: 15),
-                        Expanded(child: SizedBox()), // Empty space for balance
+                        Expanded(
+                          child: _buildMiniGameCard(
+                            context,
+                            title: 'listen_speak'.tr(), // Nhớ thêm key này vào file JSON
+                            icon: Icons.record_voice_over_rounded,
+                            color: Colors.pinkAccent, // Màu hồng cho nổi bật
+                            onTap: () => Navigator.pushNamed(context, '/speak'),
+                          ),
+                        ),
                       ],
                     ),
 
