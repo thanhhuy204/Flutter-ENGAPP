@@ -1,15 +1,11 @@
 name: flutter_kids_matching_game
 description: A new Flutter project.
-
-
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
   sdk: ">=3.1.0 <4.0.0"
-
-
 
 dependencies:
   flutter:
@@ -23,25 +19,22 @@ dependencies:
   flutter_riverpod: 2.6.1
   easy_localization: 3.0.7+1
   flutter_tts: ^4.2.3
-  flutter_gen: ^5.12.0
-  speech_to_text: ^6.6.0  # Thư viện nhận diện giọng nói
-  string_similarity: ^2.0.0 # Thư viện để chấm điểm độ giống nhau
-  permission_handler: ^11.1.0 # Xin quyền Micro
-
+  speech_to_text: ^6.6.0
+  string_similarity: ^2.0.0
+  permission_handler: ^11.1.0
+  # Thư viện lưu trữ mới - nhẹ nhàng và không lỗi
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
-  flutter_lints: ^2.0.0
-
+  flutter_lints: ^3.0.0
+  # Giữ lại flutter_gen để quản lý tài nguyên ảnh/font
+  flutter_gen: 5.4.0
 
 flutter:
-
   generate: true
   uses-material-design: true
-
 
   assets:
     - assets/sounds/
@@ -56,7 +49,6 @@ flutter:
     - assets/images/logos/
     - assets/translations/
     - assets/audio/
-    
 
   fonts:
     - family: Fredoka
@@ -64,20 +56,14 @@ flutter:
         - asset: assets/fonts/Fredoka/Fredoka-Regular.ttf
         - weight: 700
           asset: assets/fonts/Fredoka/Fredoka-Bold.ttf
-
     - family: Nunito
       fonts:
         - asset: assets/fonts/Nunito/Nunito-Regular.ttf
         - weight: 700
           asset: assets/fonts/Nunito/Nunito-Bold.ttf
-
     - family: PrincessSofia
       fonts:
         - asset: assets/fonts/PrincessSofia/PrincessSofia-Regular.ttf
-
     - family: Sunnyspells
       fonts:
         - asset: assets/fonts/Sunnyspells/Sunnyspells-Regular.otf
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
