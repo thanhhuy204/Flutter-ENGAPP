@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 enum AppLanguage {
   english,
   japanese,
+  vietnamese,
 }
 
 extension AppLanguageExtension on AppLanguage {
@@ -13,7 +14,9 @@ extension AppLanguageExtension on AppLanguage {
       case AppLanguage.english:
         return 'english'.tr();
       case AppLanguage.japanese:
-        return 'japanese'.tr(); // Anh nhớ thêm key này vào file json nhé
+        return 'japanese'.tr();
+      case AppLanguage.vietnamese: return 'vi';
+        // Anh nhớ thêm key này vào file json nhé
     }
   }
 
@@ -23,6 +26,7 @@ extension AppLanguageExtension on AppLanguage {
         return 'english';
       case AppLanguage.japanese:
         return 'japanese';
+      case AppLanguage.vietnamese: return 'vi';
     }
   }
 
@@ -32,6 +36,7 @@ extension AppLanguageExtension on AppLanguage {
         return 'en';
       case AppLanguage.japanese:
         return 'ja';
+      case AppLanguage.vietnamese: return 'vi';
     }
   }
 
@@ -41,6 +46,8 @@ extension AppLanguageExtension on AppLanguage {
         return const Locale('en', 'US');
       case AppLanguage.japanese:
         return const Locale('ja', 'JP');
+      case AppLanguage.vietnamese: return const Locale('vi', 'VI');
+
     }
   }
 }

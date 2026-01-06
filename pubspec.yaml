@@ -27,6 +27,9 @@ dependencies:
   speech_to_text: ^6.6.0  # Thư viện nhận diện giọng nói
   string_similarity: ^2.0.0 # Thư viện để chấm điểm độ giống nhau
   permission_handler: ^11.1.0 # Xin quyền Micro
+  sqflite: ^2.3.0  # Thư viện chính để làm việc với SQLite
+  path: ^1.9.0
+
 
 
 dev_dependencies:
