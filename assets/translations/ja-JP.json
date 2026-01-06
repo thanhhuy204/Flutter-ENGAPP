@@ -103,5 +103,12 @@
 
   "space_adventure": "宇宙の大冒険",
   "check_answer": "答え合わせ",
-  "mission_complete": "ミッション完了！"
+  "mission_complete": "ミッション完了！",
+
+  "listen_speak": "聞いて話す",
+  "listen": "聞く",
+  "slow": "ゆっくり",
+  "you_said": "あなたの声",
+  "hold_to_speak": "長押しして話す",
+  "next_word": "次へ"
 }

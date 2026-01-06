@@ -106,6 +106,13 @@
     "space_adventure": "Space Adventure",
     "mission_complete": "MISSION COMPLETE!",
     "featured": "Featured",
-    "check_answer": "Check Answer"
+    "check_answer": "Check Answer",
+
+    "listen_speak": "Listen & Speak",
+    "listen": "Listen",
+    "slow": "Slow",
+    "you_said": "You said",
+    "hold_to_speak": "Hold to speak",
+    "next_word": "Next"
 
 }

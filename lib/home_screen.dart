@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: _buildMiniGameCard(
                             context,
-                            title: 'listen_speak'.tr(), // Nhớ thêm key này vào file JSON
+                            title: 'Listen & Speak'.tr(), // Nhớ thêm key này vào file JSON
                             icon: Icons.record_voice_over_rounded,
                             color: Colors.pinkAccent, // Màu hồng cho nổi bật
                             onTap: () => Navigator.pushNamed(context, '/speak'),
