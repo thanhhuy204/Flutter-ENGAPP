@@ -96,7 +96,7 @@
   "peach_fruit": "モモ",
   "pomegranate": "ザクロ",
 
-  "Greedy Boy (feeding)": "もぐもぐゲーム",
+  "greedy_boy": "もぐもぐゲーム",
   "hungry_boy_title": "お腹ぺこぺこくん",
   "im_hungry_prefix": "お腹が空いた！ ",
   "listen_again": "もう一度聞く",
@@ -105,10 +105,12 @@
   "check_answer": "答え合わせ",
   "mission_complete": "ミッション完了！",
 
-  "listen_speak": "聞いて話す",
+  "listen_and_speak": "聞いて話す",
   "listen": "聞く",
   "slow": "ゆっくり",
   "you_said": "あなたの声",
   "hold_to_speak": "長押しして話す",
-  "next_word": "次へ"
+  "next_word": "次へ",
+  "vietnamese": "ベトナム語"
+
 }
