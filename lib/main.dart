@@ -14,6 +14,7 @@ import 'package:flutter_kids_matching_game/features/speaking/presentation/screen
 // Import Core
 import 'package:flutter_kids_matching_game/core/theme/app_theme.dart';
 import 'package:flutter_kids_matching_game/core/services/storage_service.dart';
+import 'package:flutter_kids_matching_game/core/data/db_helper.dart';
 
 import 'features/space/presentation/screens/space_map_screen.dart';
 
@@ -22,6 +23,10 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await GetStorage.init();
   await StorageService().init();
+
+  // Khởi tạo SQLite database với seed data
+  final dbHelper = DBHelper();
+  await dbHelper.db; // Trigger database initialization
 
   runApp(ProviderScope(
     child: EasyLocalization(

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_kids_matching_game/core/data/global_data_source.dart';
+import 'package:flutter_kids_matching_game/core/data/vocab_repository.dart';
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
 import 'vocab_state.dart';
@@ -10,6 +10,7 @@ import 'package:get_storage/get_storage.dart';
 class VocabNotifier extends AutoDisposeNotifier<VocabState> {
   final FlutterTts _tts = FlutterTts();
   late String _currentLangCode;
+  final _repository = VocabRepository();
   final _storage = GetStorage();
   final String _storageKey = 'user_added_words';
 
@@ -19,69 +20,103 @@ class VocabNotifier extends AutoDisposeNotifier<VocabState> {
     _currentLangCode = settings.selectedLanguage.languageCode;
     _initTts();
 
-    // Tự động nạp dữ liệu gộp khi khởi tạo
-    return VocabState(vocabList: _loadCombinedData('All'));
+    // Load data từ SQLite và migrate data cũ từ GetStorage (nếu có)
+    _initializeData();
+    return VocabState(vocabList: const []);
   }
 
-  // --- LOGIC GỘP DỮ LIỆU TĨNH VÀ DỮ LIỆU ĐÃ LƯU ---
-  List<GameItem> _loadCombinedData(String category) {
-    // 1. Lấy dữ liệu từ file GlobalDataSource
-    List<GameItem> baseList;
-    if (category == 'Animals') baseList = List.from(GlobalDataSource.animals);
-    else if (category == 'Fruits') baseList = List.from(GlobalDataSource.fruits);
-    else if (category == 'Colors') baseList = List.from(GlobalDataSource.colors);
-    else baseList = List.from(GlobalDataSource.getAll());
+  // Khởi tạo và migrate dữ liệu
+  Future<void> _initializeData() async {
+    // Migrate data từ GetStorage sang SQLite (chỉ chạy 1 lần)
+    await _migrateFromGetStorage();
+    
+    // Load data từ SQLite
+    await setCategory('All');
+  }
 
-    // 2. Lấy dữ liệu từ bộ nhớ máy (GetStorage)
-    final List<dynamic>? storedWords = _storage.read(_storageKey);
-    if (storedWords != null) {
-      final userWords = storedWords
-          .map((e) => GameItem.fromJson(Map<String, dynamic>.from(e)))
-          .where((item) => category == 'All' || item.id.contains(category.toLowerCase())) // Lọc theo category lưu trong ID
-          .toList();
+  // Migrate dữ liệu cũ từ GetStorage sang SQLite
+  Future<void> _migrateFromGetStorage() async {
+    final migrationKey = 'vocab_migrated_to_sqlite';
+    final isMigrated = _storage.read(migrationKey) ?? false;
 
-      return [...userWords.reversed, ...baseList]; // Ưu tiên từ mới lên đầu
+    if (!isMigrated) {
+      final List<dynamic>? storedWords = _storage.read(_storageKey);
+      if (storedWords != null && storedWords.isNotEmpty) {
+        for (var wordData in storedWords) {
+          try {
+            final item = GameItem.fromJson(Map<String, dynamic>.from(wordData));
+            // Xác định category từ ID cũ
+            String category = 'Animals';
+            if (item.id.contains('fruits')) category = 'Fruits';
+            else if (item.id.contains('colors')) category = 'Colors';
+
+            await _repository.addVocab(
+              id: item.id,
+              nameEn: item.nameEn,
+              nameVi: item.nameVi,
+              nameJa: item.nameJa,
+              category: category,
+              imagePath: item.image,
+            );
+          } catch (e) {
+            print('Error migrating word: $e');
+          }
+        }
+      }
+      // Đánh dấu đã migrate
+      _storage.write(migrationKey, true);
     }
-
-    return baseList;
   }
 
-  void setCategory(String category) {
+  // Load data từ SQLite
+  Future<void> setCategory(String category) async {
+    final vocabList = await _repository.getVocabByCategory(category);
     state = state.copyWith(
-        vocabList: _loadCombinedData(category),
-        selectedCategory: category,
-        selectedVocab: null
+      vocabList: vocabList,
+      selectedCategory: category,
+      selectedVocab: null,
     );
   }
 
-  // --- LOGIC LƯU VĨNH VIỄN ---
-  void addNewWord({
+  // Thêm từ vựng mới vào SQLite
+  Future<void> addNewWord({
     required String en,
     required String vi,
     required String ja,
-    required String category
-  }) {
-    // Tạo item mới (ID chứa category để dễ lọc)
-    final newItem = GameItem(
-      id: '${category.toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}',
-      image: 'assets/images/logos/logo1.png',
+    required String category,
+    String? imagePath,
+  }) async {
+    // Tạo ID unique
+    final id = '${category.toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}';
+
+    // Lưu vào SQLite
+    await _repository.addVocab(
+      id: id,
       nameEn: en,
       nameVi: vi,
       nameJa: ja,
+      category: category,
+      imagePath: imagePath,
     );
 
-    // 1. Ghi vào GetStorage (Lưu vào file dữ liệu của máy)
-    final List<dynamic> currentList = _storage.read(_storageKey) ?? [];
-    currentList.add(newItem.toJson());
-    _storage.write(_storageKey, currentList);
+    // Refresh UI
+    await setCategory(state.selectedCategory);
+  }
 
-    // 2. Đồng thời cập nhật vào mảng tĩnh trong GlobalDataSource để nhất quán trong phiên chạy này
-    if (category == 'Animals') GlobalDataSource.animals.add(newItem);
-    else if (category == 'Fruits') GlobalDataSource.fruits.add(newItem);
-    else if (category == 'Colors') GlobalDataSource.colors.add(newItem);
+  // Xóa từ vựng
+  Future<void> deleteWord(String id) async {
+    await _repository.deleteVocab(id);
+    await setCategory(state.selectedCategory);
+  }
 
-    // 3. Cập nhật giao diện
-    setCategory(state.selectedCategory);
+  // Tìm kiếm từ vựng
+  Future<void> searchWords(String keyword) async {
+    if (keyword.isEmpty) {
+      await setCategory(state.selectedCategory);
+      return;
+    }
+    final results = await _repository.searchVocab(keyword);
+    state = state.copyWith(vocabList: results, selectedVocab: null);
   }
 
   // --- TTS LOGIC ---

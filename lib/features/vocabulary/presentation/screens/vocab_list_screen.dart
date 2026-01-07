@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
 import 'package:flutter_kids_matching_game/features/vocabulary/presentation/notifiers/vocab_notifier.dart';
 import 'package:flutter_kids_matching_game/features/vocabulary/presentation/widgets/vocab_card.dart';
 import 'package:flutter_kids_matching_game/core/constants/setting_choices.dart';
+import 'package:flutter_kids_matching_game/core/services/image_service.dart';
 
 class VocabListScreen extends ConsumerWidget {
   const VocabListScreen({super.key});
@@ -139,11 +141,14 @@ class VocabListScreen extends ConsumerWidget {
     );
   }
 
-  // --- PHẦN 4: DIALOG THÊM TỪ VỰNG (CÓ CHỌN CATEGORY) ---
+  // --- PHẦN 4: DIALOG THÊM TỪ VỰNG (CÓ CHỌN CATEGORY VÀ HÌNH ẢNH) ---
   void _showAddWordDialog(BuildContext context, VocabNotifier notifier) {
     final enController = TextEditingController();
     final viController = TextEditingController();
+    final jaController = TextEditingController();
     String selectedCategory = 'Animals';
+    String? selectedImagePath;
+    final imageService = ImageService();
 
     showDialog(
       context: context,
@@ -155,6 +160,73 @@ class VocabListScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Chọn và hiển thị hình ảnh
+                GestureDetector(
+                  onTap: () async {
+                    // Hiển thị dialog chọn nguồn hình ảnh
+                    final source = await showDialog<String>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Chọn hình ảnh'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.photo_library),
+                              title: const Text('Từ thư viện'),
+                              onTap: () => Navigator.pop(context, 'gallery'),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.camera_alt),
+                              title: const Text('Chụp ảnh'),
+                              onTap: () => Navigator.pop(context, 'camera'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+
+                    if (source != null) {
+                      String? imagePath;
+                      if (source == 'gallery') {
+                        imagePath = await imageService.pickImageFromGallery();
+                      } else {
+                        imagePath = await imageService.pickImageFromCamera();
+                      }
+
+                      if (imagePath != null) {
+                        setDialogState(() => selectedImagePath = imagePath);
+                      }
+                    }
+                  },
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.orange, width: 2),
+                    ),
+                    child: selectedImagePath != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(13),
+                            child: Image.file(
+                              File(selectedImagePath!),
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_photo_alternate, size: 50, color: Colors.grey[400]),
+                              const SizedBox(height: 8),
+                              Text('Chọn hình ảnh', style: TextStyle(color: Colors.grey[600])),
+                            ],
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 DropdownButtonFormField<String>(
                   value: selectedCategory,
                   decoration: const InputDecoration(labelText: "Chọn nhóm"),
@@ -171,21 +243,26 @@ class VocabListScreen extends ConsumerWidget {
                   controller: viController,
                   decoration: const InputDecoration(labelText: "Tiếng Việt (vd: Quả táo)"),
                 ),
+                TextField(
+                  controller: jaController,
+                  decoration: const InputDecoration(labelText: "Tiếng Nhật (vd: リンゴ) - Tùy chọn"),
+                ),
               ],
             ),
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context), child: const Text("Hủy")),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (enController.text.isNotEmpty && viController.text.isNotEmpty) {
-                  notifier.addNewWord(
-                    en: enController.text,
-                    vi: viController.text,
-                    ja: enController.text, // Mặc định tiếng Nhật bằng tiếng Anh nếu không nhập
+                  await notifier.addNewWord(
+                    en: enController.text.trim(),
+                    vi: viController.text.trim(),
+                    ja: jaController.text.trim().isEmpty ? enController.text.trim() : jaController.text.trim(),
                     category: selectedCategory,
+                    imagePath: selectedImagePath,
                   );
-                  Navigator.pop(context);
+                  if (context.mounted) Navigator.pop(context);
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),

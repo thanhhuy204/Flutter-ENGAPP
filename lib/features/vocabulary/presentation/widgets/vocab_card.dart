@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
@@ -54,12 +55,7 @@ class VocabCard extends ConsumerWidget {
                   color: Colors.grey.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Image.asset(
-                  item.image,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                  errorBuilder: (_,__,___) => const Icon(Icons.image_not_supported, color: Colors.grey),
-                ),
+                child: _buildImage(item.image),
               ),
             ),
             const SizedBox(height: 8),
@@ -84,5 +80,32 @@ class VocabCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  // Helper method để hiển thị hình ảnh từ asset hoặc file
+  Widget _buildImage(String imagePath) {
+    if (imagePath.startsWith('assets/')) {
+      // Hình ảnh từ assets
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.contain,
+        width: double.infinity,
+        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported, color: Colors.grey),
+      );
+    } else {
+      // Hình ảnh từ file local
+      final file = File(imagePath);
+      if (file.existsSync()) {
+        return Image.file(
+          file,
+          fit: BoxFit.contain,
+          width: double.infinity,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.grey),
+        );
+      } else {
+        // File không tồn tại, hiển thị icon mặc định
+        return const Icon(Icons.image_not_supported, color: Colors.grey, size: 50);
+      }
+    }
   }
 }

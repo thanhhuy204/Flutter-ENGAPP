@@ -1,7 +1,7 @@
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 
 class SpellingState {
-  final GameItem currentItem;     // Dùng GameItem chuẩn
+  final GameItem? currentItem;     // Dùng GameItem chuẩn (nullable khi đang load)
   final String currentWord;       // Từ vựng hiện tại (đã được lấy theo EN/JP)
   final List<String> scrambledLetters;
   final List<String> userGuess;

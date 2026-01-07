@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter_kids_matching_game/core/data/global_data_source.dart';
+import 'package:flutter_kids_matching_game/core/data/vocab_repository.dart';
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
 import '../../../../core/constants/setting_choices.dart';
@@ -10,6 +10,8 @@ import 'feeding_state.dart';
 class FeedingNotifier extends AutoDisposeNotifier<FeedingState> {
   final FlutterTts _tts = FlutterTts();
   late String _langCode;
+  final _repository = VocabRepository();
+  List<GameItem> _allItems = [];
 
   @override
   FeedingState build() {
@@ -22,8 +24,25 @@ class FeedingNotifier extends AutoDisposeNotifier<FeedingState> {
     final settings = ref.watch(settingsNotifierProvider);
     _langCode = settings.selectedLanguage.languageCode;
 
+    _initData();
     _initTts();
-    return _generateLevel();
+    return FeedingState(
+      targetItem: null,
+      options: [],
+      isSuccess: false,
+      isError: false,
+      showKeyword: false,
+    );
+  }
+
+  Future<void> _initData() async {
+    final animals = await _repository.getVocabByCategory('Animals');
+    final fruits = await _repository.getVocabByCategory('Fruits');
+    _allItems = [...animals, ...fruits];
+    if (_allItems.isNotEmpty) {
+      state = _generateLevel();
+      await playRequest();
+    }
   }
 
   Future<void> _initTts() async {
@@ -36,13 +55,11 @@ class FeedingNotifier extends AutoDisposeNotifier<FeedingState> {
   }
 
   FeedingState _generateLevel() {
-    final allItems = [
-      ...GlobalDataSource.animals,
-      ...GlobalDataSource.fruits,
-    ]..shuffle(Random());
+    if (_allItems.isEmpty) return state;
 
-    final target = allItems.first;
-    final options = allItems.take(4).toList()..shuffle(Random());
+    final shuffledItems = List<GameItem>.from(_allItems)..shuffle(Random());
+    final target = shuffledItems.first;
+    final options = shuffledItems.take(4).toList()..shuffle(Random());
 
     return FeedingState(
       targetItem: target,

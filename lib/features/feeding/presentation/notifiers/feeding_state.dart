@@ -1,7 +1,7 @@
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 
 class FeedingState {
-  final GameItem targetItem;
+  final GameItem? targetItem;
   final List<GameItem> options;
   final bool isSuccess;
   final bool isError;

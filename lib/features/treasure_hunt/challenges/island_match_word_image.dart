@@ -423,7 +423,7 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Ticker
                 return _buildOptionCard(opt, isSmall);
               },
             ),
-          ],
+          ],  
         ),
       ),
     );

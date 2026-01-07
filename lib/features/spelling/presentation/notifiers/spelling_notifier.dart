@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:math';
 
-import 'package:flutter_kids_matching_game/core/data/global_data_source.dart';
+import 'package:flutter_kids_matching_game/core/data/vocab_repository.dart';
 import 'package:flutter_kids_matching_game/core/domain/entities/game_item.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
 import 'package:flutter_kids_matching_game/core/constants/setting_choices.dart'; // Import để dùng extension ngôn ngữ
@@ -11,6 +11,8 @@ import 'spelling_state.dart';
 class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
   final FlutterTts _tts = FlutterTts();
   late String _currentLangCode;
+  final _repository = VocabRepository();
+  List<GameItem> _allAnimals = [];
 
   @override
   SpellingState build() {
@@ -20,8 +22,22 @@ class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
 
     _initTts();
 
-    // 2. Load câu hỏi đầu tiên
-    return _loadLevel(0);
+    // 2. Load dữ liệu từ SQLite và load câu hỏi đầu tiên
+    _initData();
+    return SpellingState(
+      currentItem: null,
+      currentWord: '',
+      scrambledLetters: [],
+      userGuess: [],
+      isSuccess: false,
+    );
+  }
+
+  Future<void> _initData() async {
+    _allAnimals = await _repository.getVocabByCategory('Animals');
+    if (_allAnimals.isNotEmpty) {
+      state = _loadLevel(0);
+    }
   }
 
   void _initTts() async {
@@ -34,10 +50,12 @@ class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
   }
 
   SpellingState _loadLevel(int index) {
-    // Lấy danh sách động vật từ Global Data
-    final List<GameItem> data = GlobalDataSource.animals;
+    // Lấy danh sách động vật từ SQLite
+    if (_allAnimals.isEmpty) {
+      return state;
+    }
 
-    final item = data[index % data.length];
+    final item = _allAnimals[index % _allAnimals.length];
 
     // Lấy tên theo ngôn ngữ đã chọn (EN hoặc JP)
     String word = item.name(_currentLangCode).toUpperCase();
@@ -96,7 +114,8 @@ class SpellingNotifier extends AutoDisposeNotifier<SpellingState> {
   }
 
   void nextLevel() {
-    int nextIndex = Random().nextInt(GlobalDataSource.animals.length);
+    if (_allAnimals.isEmpty) return;
+    int nextIndex = Random().nextInt(_allAnimals.length);
     state = _loadLevel(nextIndex);
   }
 }
