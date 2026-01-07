@@ -36,7 +36,6 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Ticker
   List<int> usedQuestionIndices = [];
   late List<IslandQuizQuestion> roundQuestions;
 
-  // Rain drops
   final List<RainDrop> rainDrops = [];
 
   @override
@@ -54,7 +53,6 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Ticker
     
     _rainController.addListener(() {
       setState(() {
-        // Update rain drops
         for (var drop in rainDrops) {
           drop.y += drop.speed;
           if (drop.y > 1.0) {
@@ -65,7 +63,6 @@ class _IslandMatchWordImageState extends State<IslandMatchWordImage> with Ticker
       });
     });
     
-    // Initialize rain drops
     for (int i = 0; i < 100; i++) {
       rainDrops.add(RainDrop(
         x: _random.nextDouble(),

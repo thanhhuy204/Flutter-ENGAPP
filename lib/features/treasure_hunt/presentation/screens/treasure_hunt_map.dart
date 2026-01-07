@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_kids_matching_game/core/services/storage_service.dart';
 import 'challenge_screen.dart';
 
 class TreasureHuntMap extends StatefulWidget {
@@ -15,6 +16,8 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
   late List<List<int>> usedQuestionIndexes;
   late List<int> currentQuestionIndexes;
 
+  final StorageService storageService = StorageService();
+
   // Cập nhật tọa độ cho cân đối hơn trên map
   final List<Offset> levelPositions = [
     const Offset(0.37, 0.18), // Level 1
@@ -27,11 +30,19 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
   @override
   void initState() {
     super.initState();
-    resetGame();
+    storageService.init().then((_) {
+      setState(() {
+        currentLevel = storageService.getTreasureHuntLevel();
+      });
+      resetGame(init: true);
+    });
   }
 
-  void resetGame() {
-    currentLevel = 0;
+  void resetGame({bool init = false}) {
+    if (!init) {
+      currentLevel = 0;
+      storageService.saveTreasureHuntLevel(currentLevel);
+    }
     usedQuestionIndexes = List.generate(totalLevels, (_) => []);
     currentQuestionIndexes = List.generate(totalLevels, (_) => -1);
     setState(() {});
@@ -149,6 +160,7 @@ class _TreasureHuntMapState extends State<TreasureHuntMap> {
                                     setState(() {
                                       if (currentLevel < totalLevels - 1) {
                                         currentLevel++;
+                                        storageService.saveTreasureHuntLevel(currentLevel);
                                       } else {
                                         Future.delayed(const Duration(milliseconds: 500), showCongratulationDialog);
                                       }

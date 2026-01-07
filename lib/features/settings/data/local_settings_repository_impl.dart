@@ -42,8 +42,6 @@ class LocalSettingsRepository implements SettingsRepository {
     return _storage.read(kSelectedLanguageKey);
   }
 
-  // Đã xóa getSelectedLevel và getNextGameLevel
-
   @override
   String getSelectedLocale() {
     return _storage.read(kSelectedLocaleKey);

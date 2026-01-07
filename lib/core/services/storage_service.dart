@@ -16,12 +16,22 @@ class StorageService {
     return this;
   }
 
+
   T read<T>(String key) {
     return _localStorage.read(key);
   }
 
   void write(String key, dynamic value) async {
     await _localStorage.write(key, value);
+  }
+
+  // --- Lưu và đọc tiến độ level game kho báu ---
+  Future<void> saveTreasureHuntLevel(int level) async {
+    await _localStorage.write(kTreasureHuntLevelKey, level);
+  }
+
+  int getTreasureHuntLevel() {
+    return _localStorage.read(kTreasureHuntLevelKey) ?? 0;
   }
 
   Future<void> reset() async {

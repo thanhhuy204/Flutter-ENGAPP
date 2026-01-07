@@ -112,7 +112,7 @@ class SettingScreen extends ConsumerWidget {
       children: [
         const Divider(thickness: 2, color: Colors.black12, height: 20),
         const SizedBox(height: 10),
-        const Text('Made with ❤️ for Kids', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const Text('Made with for Three Chicken', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 5),
         Text('${'version'.tr()} 2.0.0', style: const TextStyle(color: Colors.grey)),
         const SizedBox(height: 20),
