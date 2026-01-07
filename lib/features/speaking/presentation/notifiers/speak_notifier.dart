@@ -13,10 +13,8 @@ class SpeakNotifier extends AutoDisposeNotifier<SpeakState> {
   @override
   SpeakState build() {
     _initSpeech();
-
     // 1. Lấy danh sách gốc và xáo trộn (Random) ngay khi khởi tạo
     final List<SpeakingLevel> randomList = List.from(SpeakingData.levels)..shuffle();
-
     // 2. Trả về state với danh sách đã được xáo trộn
     return SpeakState(shuffledLevels: randomList);
   }
