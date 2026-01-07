@@ -98,7 +98,7 @@
     "peach_fruit": "Peach",
     "pomegranate": "Pomegranate",
 
-    "Greedy Boy (feeding)": "Feeding Game",
+    "greedy_boy": "Feeding Game (Greedy Boy)",
     "hungry_boy_title": "Hungry Boy",
     "im_hungry_prefix": "I'm hungry! I want ",
     "listen_again": "Listen again",
@@ -108,11 +108,12 @@
     "featured": "Featured",
     "check_answer": "Check Answer",
 
-    "listen_speak": "Listen & Speak",
+    "listen_and_speak": "Listen & Speak",
     "listen": "Listen",
     "slow": "Slow",
     "you_said": "You said",
     "hold_to_speak": "Hold to speak",
-    "next_word": "Next"
+    "next_word": "Next",
+    "vietnamese": "Vietnamese"
 
 }

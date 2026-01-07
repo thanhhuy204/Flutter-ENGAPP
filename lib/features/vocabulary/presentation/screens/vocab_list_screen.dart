@@ -19,7 +19,7 @@ class VocabListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Từ vựng cho bé"),
+        title: const Text("Vocabulary"),
         backgroundColor: Colors.orangeAccent,
         centerTitle: true,
         elevation: 0,
@@ -150,14 +150,14 @@ class VocabListScreen extends ConsumerWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text("Thêm từ vựng mới"),
+          title: const Text("Add new vocabulary"),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
                   value: selectedCategory,
-                  decoration: const InputDecoration(labelText: "Chọn nhóm"),
+                  decoration: const InputDecoration(labelText: "Select group"),
                   items: ['Animals', 'Fruits', 'Colors'].map((cat) {
                     return DropdownMenuItem(value: cat, child: Text(cat));
                   }).toList(),
@@ -165,31 +165,31 @@ class VocabListScreen extends ConsumerWidget {
                 ),
                 TextField(
                   controller: enController,
-                  decoration: const InputDecoration(labelText: "Tiếng Anh (vd: Apple)"),
+                  decoration: const InputDecoration(labelText: "English (ex: Apple)"),
                 ),
                 TextField(
                   controller: viController,
-                  decoration: const InputDecoration(labelText: "Tiếng Việt (vd: Quả táo)"),
+                  decoration: const InputDecoration(labelText: "Vietnamese (ex: Quả táo)"),
                 ),
               ],
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Hủy")),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
             ElevatedButton(
               onPressed: () {
                 if (enController.text.isNotEmpty && viController.text.isNotEmpty) {
                   notifier.addNewWord(
                     en: enController.text,
                     vi: viController.text,
-                    ja: enController.text, // Mặc định tiếng Nhật bằng tiếng Anh nếu không nhập
+                    ja: enController.text,
                     category: selectedCategory,
                   );
                   Navigator.pop(context);
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-              child: const Text("Lưu vĩnh viễn", style: TextStyle(color: Colors.white)),
+              child: const Text("Add", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

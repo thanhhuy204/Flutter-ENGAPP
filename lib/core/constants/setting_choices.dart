@@ -15,8 +15,8 @@ extension AppLanguageExtension on AppLanguage {
         return 'english'.tr();
       case AppLanguage.japanese:
         return 'japanese'.tr();
-      case AppLanguage.vietnamese: return 'vi';
-        // Anh nhớ thêm key này vào file json nhé
+      case AppLanguage.vietnamese:
+        return 'vietnamese'.tr(); // ✅ SỬA: dùng key + .tr()
     }
   }
 
@@ -26,7 +26,8 @@ extension AppLanguageExtension on AppLanguage {
         return 'english';
       case AppLanguage.japanese:
         return 'japanese';
-      case AppLanguage.vietnamese: return 'vi';
+      case AppLanguage.vietnamese:
+        return 'vietnamese';
     }
   }
 
@@ -36,7 +37,8 @@ extension AppLanguageExtension on AppLanguage {
         return 'en';
       case AppLanguage.japanese:
         return 'ja';
-      case AppLanguage.vietnamese: return 'vi';
+      case AppLanguage.vietnamese:
+        return 'vi';
     }
   }
 
@@ -46,8 +48,8 @@ extension AppLanguageExtension on AppLanguage {
         return const Locale('en', 'US');
       case AppLanguage.japanese:
         return const Locale('ja', 'JP');
-      case AppLanguage.vietnamese: return const Locale('vi', 'VI');
-
+      case AppLanguage.vietnamese:
+        return const Locale('vi', 'VN'); // ✅ nên để VN cho đồng bộ
     }
   }
 }

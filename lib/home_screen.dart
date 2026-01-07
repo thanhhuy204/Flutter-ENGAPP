@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: _buildMiniGameCard(
                             context,
-                            title: 'Greedy Boy',
+                            title: 'greedy_boy'.tr(),
                             icon: Icons.fastfood_rounded,
                             color: Colors.green,
                             onTap: () => Navigator.push(
@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: _buildMiniGameCard(
                             context,
-                            title: 'Listen & Speak'.tr(), // Nhớ thêm key này vào file JSON
+                            title: 'listen_and_speak'.tr(), // Nhớ thêm key này vào file JSON
                             icon: Icons.record_voice_over_rounded,
                             color: Colors.pinkAccent, // Màu hồng cho nổi bật
                             onTap: () => Navigator.pushNamed(context, '/speak'),
