@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import '../../data/services/space_storage_service.dart';
+import '../../../../core/services/space_storage_service.dart';
 import 'space_state.dart';
 
 class SpaceNotifier extends AutoDisposeNotifier<SpaceState> {
