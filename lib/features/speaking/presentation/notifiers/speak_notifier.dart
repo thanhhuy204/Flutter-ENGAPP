@@ -73,19 +73,28 @@ class SpeakNotifier extends AutoDisposeNotifier<SpeakState> {
 
   // --- GHI ÂM ---
   void startListening() async {
-    bool available = await _speechToText.initialize();
-    if (available) {
-      // Ngắt âm thanh đang đọc (nếu có) trước khi ghi âm
-      await _tts.stop();
+    // Kiểm tra và yêu cầu quyền lại mỗi lần nếu cần
+    bool available = await _speechToText.initialize(
+      onError: (val) => print('Lỗi STT: $val'),
+      onStatus: (val) => print('Trạng thái STT: $val'),
+    );
 
+    if (available) {
+      await _tts.stop();
       state = state.copyWith(isListening: true, recognizedText: "...");
+
       _speechToText.listen(
         onResult: (result) {
           state = state.copyWith(recognizedText: result.recognizedWords);
           if (result.finalResult) stopListening();
         },
-        localeId: "en-US", // Ép nhận diện tiếng Anh
+        localeId: "en-US",
+        listenFor: const Duration(seconds: 30),
+        pauseFor: const Duration(seconds: 5),
       );
+    } else {
+      // Thông báo cho người dùng nếu dịch vụ không sẵn sàng
+      state = state.copyWith(recognizedText: "Thiết bị không hỗ trợ ghi âm hoặc chưa cấp quyền");
     }
   }
 
