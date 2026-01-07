@@ -14,12 +14,10 @@ class FeedingScreen extends ConsumerWidget {
     final state = ref.watch(feedingProvider);
     final notifier = ref.read(feedingProvider.notifier);
 
-    // ⭐ LẤY MÃ NGÔN NGỮ HIỆN TẠI TỪ SETTINGS
     final langCode = ref.watch(settingsNotifierProvider).selectedLanguage.languageCode;
 
     return Scaffold(
       appBar: AppBar(
-        // ⭐ SỬA: Dùng key dịch cho Title
         title: Text("hungry_boy_title".tr()),
         backgroundColor: Colors.orange,
       ),
@@ -35,7 +33,6 @@ class FeedingScreen extends ConsumerWidget {
           children: [
             const SizedBox(height: 30),
 
-            // 1️⃣ Bong bóng lời thoại
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -46,12 +43,14 @@ class FeedingScreen extends ConsumerWidget {
                   BoxShadow(color: Colors.black12, blurRadius: 10),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 5,
                 children: [
-                  // ⭐ SỬA: Dùng key dịch cho lời thoại
                   Text(
                     "im_hungry_prefix".tr(),
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -59,7 +58,6 @@ class FeedingScreen extends ConsumerWidget {
                     ),
                   ),
 
-                  // ⭐ PHẦN ĐỘNG: Hiển thị name dựa theo langCode
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 400),
                     transitionBuilder: (child, animation) {
@@ -70,9 +68,10 @@ class FeedingScreen extends ConsumerWidget {
                     },
                     child: Text(
                       state.showKeyword
-                          ? state.targetItem.name(langCode) // ⭐ SỬA: nameEn -> name(langCode)
+                          ? state.targetItem.name(langCode)
                           : "...",
                       key: ValueKey(state.showKeyword),
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -84,66 +83,69 @@ class FeedingScreen extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
-            // 2️⃣ Cậu bé béo + nút nghe lại
-            DragTarget<GameItem>(
-              onAccept: notifier.checkAnswer,
-              builder: (context, candidateData, rejectedData) {
-                return Column(
-                  children: [
-                    AnimatedScale(
-                      scale: state.isSuccess ? 1.15 : 1.0,
-                      duration: const Duration(milliseconds: 300),
-                      child: Image.asset(
-                        'assets/images/feedings/ChubbyBoy.png',
-                        height: 250,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.face, size: 200, color: Colors.orange),
+            // 2️⃣ Cậu bé béo + nút nghe lại (ĐƯỢC BỌC TRONG EXPANDED)
+            Expanded(
+              child: DragTarget<GameItem>(
+                onAccept: notifier.checkAnswer,
+                builder: (context, candidateData, rejectedData) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center, // Căn giữa theo chiều dọc
+                    children: [
+                      // Hình ảnh cậu bé dùng Flexible để co giãn
+                      Flexible(
+                        child: AnimatedScale(
+                          scale: state.isSuccess ? 1.15 : 1.0,
+                          duration: const Duration(milliseconds: 300),
+                          child: Image.asset(
+                            'assets/images/feedings/ChubbyBoy.png',
+                            fit: BoxFit.contain, // Giữ tỷ lệ ảnh không bị méo
+                            errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.face, size: 100, color: Colors.orange),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
 
-                    // 🔊 NÚT LOA + LISTEN AGAIN
-                    InkWell(
-                      borderRadius: BorderRadius.circular(40),
-                      onTap: notifier.playRequest,
-                      splashColor: Colors.orange.withOpacity(0.3),
-                      highlightColor: Colors.orange.withOpacity(0.15),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const CircleAvatar(
-                            backgroundColor: Colors.orange,
-                            radius: 28,
-                            child: Icon(
-                              Icons.volume_up,
-                              color: Colors.white,
-                              size: 30,
+                      const SizedBox(height: 12),
+
+                      // 🔊 NÚT LOA + LISTEN AGAIN
+                      InkWell(
+                        borderRadius: BorderRadius.circular(40),
+                        onTap: notifier.playRequest,
+                        splashColor: Colors.orange.withOpacity(0.3),
+                        highlightColor: Colors.orange.withOpacity(0.15),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircleAvatar(
+                              backgroundColor: Colors.orange,
+                              radius: 28,
+                              child: Icon(
+                                Icons.volume_up,
+                                color: Colors.white,
+                                size: 30,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          // ⭐ SỬA: Dùng key dịch cho nút bấm
-                          Text(
-                            'listen_again'.tr(),
-                            style: const TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.deepOrange,
+                            const SizedBox(height: 4),
+                            Text(
+                              'listen_again'.tr(),
+                              style: const TextStyle(
+                                fontSize: 21,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.deepOrange,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
 
-            const Spacer(),
-
-            // 3️⃣ Khay thức ăn
+            //Khay thức ăn
             Container(
               padding: const EdgeInsets.all(25),
               decoration: const BoxDecoration(
