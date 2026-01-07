@@ -1,12 +1,20 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../domain/entities/game_item.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DBHelper {
   static Database? _db;
   static const int _databaseVersion = 2; // Tăng version để trigger migration
+  static bool _isSupported = !kIsWeb; // SQLite không hỗ trợ web
+
+  // Check if SQLite is supported on this platform
+  bool get isSupported => _isSupported;
 
   Future<Database> get db async {
+    if (!_isSupported) {
+      throw UnsupportedError('SQLite is not supported on web platform');
+    }
     if (_db != null) return _db!;
     _db = await _initDb();
     return _db!;

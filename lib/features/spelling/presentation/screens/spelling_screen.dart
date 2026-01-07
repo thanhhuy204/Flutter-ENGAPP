@@ -24,11 +24,13 @@ class SpellingScreen extends ConsumerWidget {
             Container(
               height: 200,
               padding: const EdgeInsets.all(20),
-              child: Image.asset(
-                state.currentItem.image, // SỬA: dùng currentItem
-                fit: BoxFit.contain,
-                errorBuilder: (_,__,___) => const Icon(Icons.image, size: 100),
-              ),
+              child: state.currentItem != null
+                  ? Image.asset(
+                      state.currentItem!.image,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_,__,___) => const Icon(Icons.image, size: 100),
+                    )
+                  : const CircularProgressIndicator(),
             ),
 
             // Các ô đáp án

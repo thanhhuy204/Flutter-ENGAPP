@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_kids_matching_game/features/settings/presentation/notifiers/settings_notifier.dart';
 import 'package:flutter_kids_matching_game/features/vocabulary/presentation/notifiers/vocab_notifier.dart';
@@ -27,8 +28,8 @@ class VocabListScreen extends ConsumerWidget {
         elevation: 0,
       ),
 
-      // Nút thêm từ vựng mới - Lưu vĩnh viễn vào bộ nhớ
-      floatingActionButton: FloatingActionButton(
+      // Nút thêm từ vựng mới - Lưu vĩnh viễn vào bộ nhớ (chỉ trên mobile/desktop)
+      floatingActionButton: kIsWeb ? null : FloatingActionButton(
         onPressed: () => _showAddWordDialog(context, notifier),
         backgroundColor: Colors.orange,
         child: const Icon(Icons.add, color: Colors.white),

@@ -69,8 +69,8 @@ class FeedingScreen extends ConsumerWidget {
                       );
                     },
                     child: Text(
-                      state.showKeyword
-                          ? state.targetItem.name(langCode) // ⭐ SỬA: nameEn -> name(langCode)
+                      state.showKeyword && state.targetItem != null
+                          ? state.targetItem!.name(langCode)
                           : "...",
                       key: ValueKey(state.showKeyword),
                       style: const TextStyle(

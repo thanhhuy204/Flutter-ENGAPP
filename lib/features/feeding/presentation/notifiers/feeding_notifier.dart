@@ -72,18 +72,20 @@ class FeedingNotifier extends AutoDisposeNotifier<FeedingState> {
 
   /// 🔊 Chỉ nói, KHÔNG lộ keyword trên UI
   Future<void> playRequest() async {
+    if (state.targetItem == null) return;
+    
     final text = _langCode == 'ja'
-        ? "${state.targetItem.nameJa}をください"
-        : "I'm hungry! I want ${state.targetItem.nameEn}!";
+        ? "${state.targetItem!.nameJa}をください"
+        : "I'm hungry! I want ${state.targetItem!.nameEn}!";
 
     await _tts.speak(text);
   }
 
   /// ✅ Cho ăn
   Future<void> checkAnswer(GameItem selectedItem) async {
-    if (state.isSuccess) return;
+    if (state.isSuccess || state.targetItem == null) return;
 
-    if (selectedItem.id == state.targetItem.id) {
+    if (selectedItem.id == state.targetItem!.id) {
       // ⭐ HIỆN KEYWORD
       state = state.copyWith(
         isSuccess: true,

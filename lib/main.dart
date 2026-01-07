@@ -24,9 +24,14 @@ void main() async {
   await GetStorage.init();
   await StorageService().init();
 
-  // Khởi tạo SQLite database với seed data
-  final dbHelper = DBHelper();
-  await dbHelper.db; // Trigger database initialization
+  // Khởi tạo SQLite database với seed data (chỉ trên mobile/desktop, không phải web)
+  try {
+    final dbHelper = DBHelper();
+    await dbHelper.db; // Trigger database initialization
+  } catch (e) {
+    // Web hoặc platform không hỗ trợ SQLite, sẽ fallback sang GlobalDataSource
+    print('SQLite not available on this platform: $e');
+  }
 
   runApp(ProviderScope(
     child: EasyLocalization(

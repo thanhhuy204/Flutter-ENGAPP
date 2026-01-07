@@ -86,6 +86,11 @@ class VocabNotifier extends AutoDisposeNotifier<VocabState> {
     required String category,
     String? imagePath,
   }) async {
+    if (!_repository.isSQLiteSupported) {
+      // Web không hỗ trợ thêm từ vựng
+      return;
+    }
+
     // Tạo ID unique
     final id = '${category.toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}';
 
