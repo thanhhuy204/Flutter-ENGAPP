@@ -72,13 +72,13 @@ class SpaceData {
     {'word': 'pear', 'folder': 'fruits'},
     {'word': 'peach', 'folder': 'fruits'},
     {'word': 'pineapple', 'folder': 'fruits'},
-    {'word': 'red', 'folder': 'colors'},
-    {'word': 'blue', 'folder': 'colors'},
-    {'word': 'green', 'folder': 'colors'},
-    {'word': 'yellow', 'folder': 'colors'},
-    {'word': 'white', 'folder': 'colors'},
-    {'word': 'silver', 'folder': 'colors'},
-    {'word': 'pink', 'folder': 'colors'},
+    {'word': 'Red', 'folder': 'colors'},
+    {'word': 'Blue', 'folder': 'colors'},
+    {'word': 'Green', 'folder': 'colors'},
+    {'word': 'Yellow', 'folder': 'colors'},
+    {'word': 'White', 'folder': 'colors'},
+    {'word': 'Silver', 'folder': 'colors'},
+    {'word': 'Pink', 'folder': 'colors'},
   ];
 
   // 🧩 DỮ LIỆU CÂU ĐỐ CHO LEVEL 4 (MARS)
